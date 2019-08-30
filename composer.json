@@ -14,5 +14,12 @@
     },
     "autoload": {
         "psr-4": { "ZZGo\\": "src/" }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "ZZGo\\ZZGoServiceProvider"
+            ]
+        }
     }
 }
