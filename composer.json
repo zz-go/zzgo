@@ -1,0 +1,18 @@
+{
+    "name": "kazzpersky/zzgo",
+    "description": "-",
+    "keywords": ["kazzpersky", "zzgo", "laravel", "quickstart", "generator"],
+    "homepage": "https://mave.at",
+    "license": ["MIT"],
+    "authors": [{
+        "name": "Manfred John",
+        "homepage": "https://mave.at"
+    }],
+    "require": {
+        "php": "^7.1.3",
+        "laravel/framework": "5.8.*"
+    },
+    "autoload": {
+        "psr-4": { "ZZGo\\": "src/" }
+    }
+}
