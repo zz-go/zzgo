@@ -5,7 +5,7 @@ namespace ZZGo;
 use Illuminate\Support\ServiceProvider;
 use ZZGo\Console\ZZGo;
 
-class ZZGoServiceProvider extends ServiceProvider
+class ConsoleServiceProvider extends ServiceProvider
 {
     /**
      * Boot the service provider.
