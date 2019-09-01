@@ -37,13 +37,14 @@ class Controller extends Base
      */
     public function __construct(string $modelName)
     {
-        $this->modelName = $modelName;
+        $this->modelName = ucfirst($modelName);
 
-        parent::__construct(ucfirst($this->modelName) . "Controller", "App\Http\Controllers\API");
+        parent::__construct($this->modelName . "Controller", "App\Http\Controllers\API");
 
         //Model extends base model
-        $this->namespace->addUse('App\\Models\\' . ucfirst($modelName));
+        $this->namespace->addUse('App\\Models\\' . $this->modelName);
         $this->namespace->addUse("App\Http\Controllers\Controller");
+        $this->namespace->addUse("Illuminate\Http\Request");
         $this->class->setExtends("App\Http\Controllers\Controller");
 
         $this->addDefaultRoutes();
@@ -61,7 +62,7 @@ class Controller extends Base
             . DIRECTORY_SEPARATOR . 'Http'
             . DIRECTORY_SEPARATOR . 'Controllers'
             . DIRECTORY_SEPARATOR . 'API'
-            . DIRECTORY_SEPARATOR . ucfirst($this->modelName) . 'Controller.php';
+            . DIRECTORY_SEPARATOR . $this->modelName . 'Controller.php';
 
         parent::materialize();
 
@@ -75,29 +76,69 @@ class Controller extends Base
      */
     protected function addDefaultRoutes()
     {
-        //Get list
+        //GET list
         $route          = new Route(
             "get",
             str::plural(strtolower($this->modelName)),
-            ucfirst($this->modelName) . "Controller",
+            $this->modelName . "Controller",
             "list");
         $this->routes[] = $route;
 
         $this->class->addMethod("list")
-                    ->setBody('return response(' . ucfirst($this->modelName) . '::all());');
+                    ->addComment("List all " . str::plural(strtolower($this->modelName)))
+                    ->addComment("")
+                    ->addComment("@return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response")
+                    ->setBody('return response(' . $this->modelName . '::all());');
 
 
-        //Get single
+        //GET single
         $route          = new Route(
             "get",
             str::plural(strtolower($this->modelName)) . "/{" . strtolower($this->modelName) . "}",
-            ucfirst($this->modelName) . "Controller",
+            $this->modelName . "Controller",
             "get");
         $this->routes[] = $route;
 
         $this->class->addMethod("get")
+                    ->addComment("Show single " . strtolower($this->modelName))
+                    ->addComment("")
+                    ->addComment("@param {$this->modelName} \$" . strtolower($this->modelName))
+                    ->addComment("@return {$this->modelName}")
                     ->setBody('return $' . strtolower($this->modelName) . ';')
-                    ->addParameter($this->modelName)->setTypeHint('App\\Models\\' . ucfirst($this->modelName));
+                    ->addParameter(strtolower($this->modelName))->setTypeHint('App\\Models\\' . $this->modelName);
+
+        //POST
+        $route          = new Route(
+            "post",
+            str::plural(strtolower($this->modelName)) . "/",
+            $this->modelName . "Controller",
+            "post");
+        $this->routes[] = $route;
+
+        $this->class->addMethod("post")
+                    ->addComment("Create new " . strtolower($this->modelName))
+                    ->addComment("")
+                    ->addComment("@param Request \$request")
+                    ->addComment("@return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response")
+                    ->setBody("{$this->modelName}::create(\$request->all());\nreturn response(null, 204);")
+                    ->addParameter("request")->setTypeHint('Illuminate\Http\Request');
+
+        //DELETE single
+        $route          = new Route(
+            "delete",
+            str::plural(strtolower($this->modelName)) . "/{" . strtolower($this->modelName) . "}",
+            $this->modelName . "Controller",
+            "delete");
+        $this->routes[] = $route;
+
+        $this->class->addMethod("delete")
+                    ->addComment("Delete " . strtolower($this->modelName))
+                    ->addComment("")
+                    ->addComment("@param {$this->modelName} \$" . strtolower($this->modelName))
+                    ->addComment("@return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response")
+                    ->addComment("@throws \Exception")
+                    ->setBody("\$" . strtolower($this->modelName) . "->delete();\nreturn response(null, 204);")
+                    ->addParameter(strtolower($this->modelName))->setTypeHint('App\\Models\\' . $this->modelName);
     }
 
 
