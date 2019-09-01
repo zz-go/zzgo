@@ -1,6 +1,6 @@
 <?php
 
-namespace ZZGo;
+namespace ZZGo\Console;
 
 use Illuminate\Support\ServiceProvider;
 use ZZGo\Console\ZZGo;
