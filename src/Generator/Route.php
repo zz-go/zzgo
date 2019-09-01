@@ -4,7 +4,7 @@
  * @author Manfred John <manfred.john@agentur-loop.com>
  */
 
-namespace ZZGo;
+namespace ZZGo\Generator;
 
 
 /**

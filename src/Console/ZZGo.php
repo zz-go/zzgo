@@ -1,11 +1,11 @@
 <?php
 
-namespace ZZGo;
+namespace ZZGo\Console;
 
 use Illuminate\Console\Command;
-use ZZGo\Controller;
-use ZZGo\Migration;
-use ZZGo\Model;
+use ZZGo\Generator\Controller;
+use ZZGo\Generator\Migration;
+use ZZGo\Generator\Model;
 
 /**
  * Class ZZGo

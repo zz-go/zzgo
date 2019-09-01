@@ -2,9 +2,8 @@
 
 namespace ZZGo;
 
-use Illuminate\Foundation\Application as LaravelApplication;
 use Illuminate\Support\ServiceProvider;
-use Laravel\Lumen\Application as LumenApplication;
+use ZZGo\Console\ZZGo;
 
 class ZZGoServiceProvider extends ServiceProvider
 {
