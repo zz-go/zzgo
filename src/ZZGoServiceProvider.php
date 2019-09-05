@@ -1,11 +1,11 @@
 <?php
 
-namespace ZZGo\Console;
+namespace ZZGo;
 
 use Illuminate\Support\ServiceProvider;
 use ZZGo\Console\ZZGo;
 
-class ConsoleServiceProvider extends ServiceProvider
+class ZZGoServiceProvider extends ServiceProvider
 {
     /**
      * Boot the service provider.
@@ -19,6 +19,8 @@ class ConsoleServiceProvider extends ServiceProvider
                 ZZGo::class
             ]);
         }
+
+        $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
     }
 
     /**

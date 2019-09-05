@@ -19,7 +19,7 @@
     "extra": {
         "laravel": {
             "providers": [
-                "ZZGo\\Console\\ConsoleServiceProvider"
+                "ZZGo\\ConsoleServiceProvider"
             ]
         }
     }
