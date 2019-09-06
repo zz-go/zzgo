@@ -4,8 +4,10 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateActionEventsTable extends Migration
+class CreateZZDataDefinitionsTable extends Migration
 {
+
+
     /**
      * Run the migrations.
      *
@@ -13,14 +15,15 @@ class CreateActionEventsTable extends Migration
      */
     public function up()
     {
-        Schema::create('zz_datadefinition', function (Blueprint $table) {
+        Schema::create('zz_datadefinitions', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->string('name');
-            $table->string('type');
+            $table->string('name')->nullable(false);
+            $table->string('type')->nullable(false);
             $table->boolean('index')->default(false);
             $table->boolean('unsigned')->nullable(true);
             $table->boolean('nullable')->default(false);
             $table->string('default');
+            $table->softDeletes();
             $table->timestamps();
         });
     }
@@ -32,6 +35,6 @@ class CreateActionEventsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('zz_datadefinition');
+        Schema::dropIfExists('zz_datadefinitions');
     }
 }
