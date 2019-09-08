@@ -23,11 +23,6 @@ class ZZGoServiceProvider extends ServiceProvider
         }
 
 
-
-        Route::model('data_definition', DataDefinition::class);
-
-
-
         //Migrations
         $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
 
