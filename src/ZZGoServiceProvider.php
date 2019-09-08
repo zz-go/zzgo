@@ -2,10 +2,12 @@
 
 namespace ZZGo;
 
+use Illuminate\Routing\Router;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 use ZZGo\Console\ZZGo;
-use ZZGo\Models\DataDefinition;
+use ZZGo\Http\Middleware\DefaultReturnJson;
+
 
 class ZZGoServiceProvider extends ServiceProvider
 {
@@ -18,17 +20,23 @@ class ZZGoServiceProvider extends ServiceProvider
     {
         if ($this->app->runningInConsole()) {
             $this->commands([
-                ZZGo::class
-            ]);
+                                ZZGo::class,
+                            ]);
         }
 
 
         //Migrations
-        $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
+        $this->loadMigrationsFrom(__DIR__ . '/../database/migrations');
+
 
         //Routes
+
+        /** @var Router $router */
+        $router = $this->app['router'];
+        $router->pushMiddlewareToGroup('zzgo', DefaultReturnJson::class);
+
         Route::group($this->routeConfiguration(), function () {
-            $this->loadRoutesFrom(__DIR__.'/../routes/api.php');
+            $this->loadRoutesFrom(__DIR__ . '/../routes/api.php');
         });
     }
 
@@ -50,11 +58,11 @@ class ZZGoServiceProvider extends ServiceProvider
     protected function routeConfiguration()
     {
         return [
-            'namespace' => 'ZZGo\Http\Controllers',
-            'domain' => config('nova.domain', null),
-            'as' => 'zzgo.api.',
-            'prefix' => 'zzgo',
-            'middleware' => 'api',
+            'namespace'  => 'ZZGo\Http\Controllers',
+            'domain'     => config('nova.domain', null),
+            'as'         => 'zzgo.api.',
+            'prefix'     => 'zzgo',
+            'middleware' => ['api', 'zzgo'],
         ];
     }
 }
