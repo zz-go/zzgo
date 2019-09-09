@@ -24,7 +24,7 @@ class DataDefinitionController extends Controller
      */
     public function index()
     {
-        return response(DataDefinition::all());
+        return response()->json(DataDefinition::all());
     }
 
 
@@ -36,7 +36,7 @@ class DataDefinitionController extends Controller
      */
     public function show(DataDefinition $data_definition)
     {
-        return $data_definition;
+        return response()->json($data_definition);
     }
 
 
@@ -50,7 +50,7 @@ class DataDefinitionController extends Controller
     {
         DataDefinition::create($request->all());
 
-        return response(null, 204);
+        return response()->json(null, 204);
     }
 
 
@@ -65,6 +65,6 @@ class DataDefinitionController extends Controller
     {
         $data_definition->delete();
 
-        return response(null, 204);
+        return response()->json(null, 204);
     }
 }
