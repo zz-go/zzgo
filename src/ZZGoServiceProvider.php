@@ -33,6 +33,7 @@ class ZZGoServiceProvider extends ServiceProvider
 
         /** @var Router $router */
         $router = $this->app['router'];
+
         $router->pushMiddlewareToGroup('zzgo', DefaultReturnJson::class);
 
         Route::group($this->routeConfiguration(), function () {
@@ -59,10 +60,10 @@ class ZZGoServiceProvider extends ServiceProvider
     {
         return [
             'namespace'  => 'ZZGo\Http\Controllers',
-            'domain'     => config('nova.domain', null),
+            'domain'     => null,
             'as'         => 'zzgo.api.',
             'prefix'     => 'zzgo',
-            'middleware' => ['api', 'zzgo'],
+            'middleware' => ['zzgo', 'api'],
         ];
     }
 }

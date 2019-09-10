@@ -4,10 +4,8 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateZZDataDefinitionsTable extends Migration
+class CreateSysDbFieldDefinitionsTable extends Migration
 {
-
-
     /**
      * Run the migrations.
      *
@@ -15,9 +13,15 @@ class CreateZZDataDefinitionsTable extends Migration
      */
     public function up()
     {
-        Schema::create('zz_datadefinitions', function (Blueprint $table) {
+        Schema::create('sys_db_field_definitions', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->string('name')->nullable(false);
+
+            $table->unsignedBigInteger('sys_db_table_definition_id');
+            $table->foreign('sys_db_table_definition_id')
+                  ->references('id')->on('sys_db_table_definitions')
+                  ->onDelete('cascade');
+
+            $table->string('name')->nullable(false)->unique();
             $table->string('type')->nullable(false);
             $table->boolean('index')->default(false);
             $table->boolean('unsigned')->nullable(true);
@@ -35,6 +39,6 @@ class CreateZZDataDefinitionsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('zz_datadefinitions');
+        Schema::dropIfExists('sys_db_field_definitions');
     }
 }
