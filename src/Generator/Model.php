@@ -6,6 +6,8 @@
 
 namespace ZZGo\Generator;
 
+use ZZGo\Models\SysDbTableDefinition;
+
 /**
  * Class Migration
  *
@@ -23,17 +25,30 @@ class Model extends Base
     /**
      * Migration constructor.
      *
-     * @param $modelName
+     * @param string|SysDbTableDefinition $model
      */
-    public function __construct(string $modelName)
+    public function __construct($model)
     {
-        $this->modelName = $modelName;
+        $inputName       = $model instanceof SysDbTableDefinition ? $model->name : $model;
+        $this->modelName = $inputName;
 
-        parent::__construct(ucfirst($modelName), "App\Models");
+        parent::__construct(ucfirst($this->modelName), "App\Models");
 
         //Model extends base model
         $this->namespace->addUse("Illuminate\Database\Eloquent\Model");
         $this->class->setExtends("Illuminate\Database\Eloquent\Model");
+
+        //If object was initialized with SysDbTableDefinition - apply all fields
+        If ($model instanceof SysDbTableDefinition) {
+            $fillables = [];
+            /* @var SysDbTableDefinition $sysDbFieldDefinition */
+            foreach ($model->sysDbFieldDefinitions as $sysDbFieldDefinition) {
+                $fillables [] = $sysDbFieldDefinition->name;
+            }
+            $this->setFillable($fillables);
+        }
+
+        return $this;
     }
 
     /**

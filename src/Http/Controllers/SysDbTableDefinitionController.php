@@ -7,7 +7,9 @@
 namespace ZZGo\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use ZZGo\Generator\Controller as GeneratorController;
 use ZZGo\Generator\Migration;
+use ZZGo\Generator\Model;
 use ZZGo\Models\SysDbTableDefinition;
 use Illuminate\Http\Request;
 
@@ -81,6 +83,8 @@ class SysDbTableDefinitionController extends Controller
 
         foreach ($data_definitions as $data_definition) {
             (new Migration($data_definition))->materialize();
+            (new Model($data_definition))->materialize();
+            (new GeneratorController($data_definition))->materialize();
         }
 
         return response()->json(null, 204);

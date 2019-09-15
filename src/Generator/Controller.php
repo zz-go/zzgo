@@ -8,6 +8,7 @@ namespace ZZGo\Generator;
 
 
 use Illuminate\Support\Str;
+use ZZGo\Models\SysDbTableDefinition;
 
 
 /**
@@ -33,11 +34,12 @@ class Controller extends Base
     /**
      * Migration constructor.
      *
-     * @param $modelName
+     * @param string|SysDbTableDefinition $model
      */
-    public function __construct(string $modelName)
+    public function __construct($model)
     {
-        $this->modelName = ucfirst($modelName);
+        $inputName       = $model instanceof SysDbTableDefinition ? $model->name : $model;
+        $this->modelName = ucfirst($inputName);
 
         parent::__construct($this->modelName . "Controller", "App\Http\Controllers\API");
 
@@ -49,6 +51,7 @@ class Controller extends Base
 
         $this->addDefaultRoutes();
 
+        return $this;
     }
 
 
