@@ -6,9 +6,9 @@
 
 namespace ZZGo\Generator;
 
-
 use Illuminate\Support\Str;
 use Nette\PhpGenerator\PhpLiteral;
+use ZZGo\Models\SysDbTableDefinition;
 
 /**
  * Class Migration
@@ -41,22 +41,33 @@ class Migration extends Base
     protected $tableName;
 
     /**
+     * Class name
+     *
+     * @var string
+     */
+    protected $className;
+
+    /**
      * Fields added to the migration
      *
      * @var array
      */
     protected $fields = [];
 
+
     /**
      * Migration constructor.
      *
-     * @param $tableName
+     * @param string|SysDbTableDefinition $table
+     * @throws \Exception
      */
-    public function __construct(string $tableName)
+    public function __construct($table)
     {
-        $this->tableName = Str::plural($tableName);
+        $inputName       = $table instanceof SysDbTableDefinition ? $table->name : $table;
+        $this->tableName = Str::snake(Str::pluralStudly(class_basename($inputName)));
+        $this->className = Str::studly($this->tableName);
 
-        parent::__construct("Create" . ucfirst($this->tableName) . "Table");
+        parent::__construct("Create" . ucfirst($this->className) . "Table");
 
         //Default use for migrations
         $this->file->addUse("Illuminate\Support\Facades\Schema");
@@ -68,6 +79,21 @@ class Migration extends Base
         //Add default methods in migrations
         $this->addMethod('up');
         $this->addMethod('down');
+
+        //If object was initialized with SysDbTableDefinition - apply all fields
+        If ($table instanceof SysDbTableDefinition) {
+            /* @var SysDbTableDefinition $sysDbFieldDefinition */
+            foreach ($table->sysDbFieldDefinitions as $sysDbFieldDefinition) {
+                $this->addField(["name"     => $sysDbFieldDefinition->name,
+                                 "type"     => $sysDbFieldDefinition->type,
+                                 "index"    => $sysDbFieldDefinition->index,
+                                 "unsigned" => $sysDbFieldDefinition->unsigned,
+                                 "default"  => $sysDbFieldDefinition->default,
+                                ]);
+            }
+        }
+
+        return $this;
     }
 
     /**

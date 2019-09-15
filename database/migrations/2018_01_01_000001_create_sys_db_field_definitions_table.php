@@ -26,7 +26,7 @@ class CreateSysDbFieldDefinitionsTable extends Migration
             $table->boolean('index')->default(false);
             $table->boolean('unsigned')->nullable(true);
             $table->boolean('nullable')->default(false);
-            $table->string('default');
+            $table->string('default')->nullable(true);
             $table->softDeletes();
             $table->timestamps();
         });

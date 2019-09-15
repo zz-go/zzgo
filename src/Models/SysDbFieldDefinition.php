@@ -12,6 +12,12 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 /**
  * Class SysDbFieldDefinition
  *
+ * @property string name
+ * @property string type
+ * @property string index
+ * @property boolean unsigned
+ * @property boolean nullable
+ * @property string default
  * @package ZZGo\Models
  */
 class SysDbFieldDefinition extends Model

@@ -12,6 +12,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 /**
  * Class SysDbTableDefinition
  *
+ * @property string name
+ * @property SysDbFieldDefinition sysDbFieldDefinitions
  * @package ZZGo\Models
  */
 class SysDbTableDefinition extends Model
@@ -26,12 +28,12 @@ class SysDbTableDefinition extends Model
     /**
      * @var array
      */
-    protected $with = ['sys_db_field_definitions'];
+    protected $with = ['sysDbFieldDefinitions'];
 
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-    public function sys_db_field_definitions()
+    public function sysDbFieldDefinitions()
     {
         return $this->hasMany(SysDbFieldDefinition::class);
     }

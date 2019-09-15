@@ -7,6 +7,7 @@
 namespace ZZGo\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use ZZGo\Generator\Migration;
 use ZZGo\Models\SysDbTableDefinition;
 use Illuminate\Http\Request;
 
@@ -67,17 +68,19 @@ class SysDbTableDefinitionController extends Controller
         return response()->json(null, 204);
     }
 
+
     /**
      * Generate all defined data definitions
      *
      * @return \Illuminate\Http\JsonResponse
+     * @throws \Exception
      */
     public function materialize()
     {
         $data_definitions = SysDbTableDefinition::all();
 
-        foreach($data_definitions as $data_definition) {
-//
+        foreach ($data_definitions as $data_definition) {
+            (new Migration($data_definition))->materialize();
         }
 
         return response()->json(null, 204);

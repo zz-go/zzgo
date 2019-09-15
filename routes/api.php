@@ -21,6 +21,7 @@ Route::group([
 
         Route::get('/', ['uses' => 'SysDbTableDefinitionController@show']);
         Route::delete('/', ['uses' => 'SysDbTableDefinitionController@destroy']);
+        Route::post('/materialize', ['uses' => 'SysDbTableDefinitionController@materialize']);
 
         Route::group([
                          'prefix' => 'sys-db-field-definitions',
