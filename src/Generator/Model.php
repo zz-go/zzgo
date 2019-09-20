@@ -46,6 +46,12 @@ class Model extends Base
                 $fillables [] = $sysDbFieldDefinition->name;
             }
             $this->setFillable($fillables);
+
+            //Add timestamps if active
+            $this->setUseTimestamps($model->use_timestamps);
+
+            //Set if table has soft delete
+            if ($model->use_soft_deletes) $this->setUseSoftDeletes();
         }
 
         return $this;
@@ -58,6 +64,17 @@ class Model extends Base
     {
         $this->namespace->addUse("Illuminate\Database\Eloquent\SoftDeletes");
         $this->class->addTrait("Illuminate\Database\Eloquent\SoftDeletes");
+
+        return $this;
+    }
+
+
+    /**
+     * @param bool $isActive
+     */
+    public function setUseTimestamps(bool $isActive)
+    {
+        $this->class->addProperty("timestamps", $isActive);
     }
 
     /**

@@ -16,6 +16,8 @@ class CreateSysDbTableDefinitionsTable extends Migration
         Schema::create('sys_db_table_definitions', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('name')->nullable(false)->unique();
+            $table->boolean('use_timestamps')->nullable(false)->default(true);
+            $table->boolean('use_soft_deletes')->nullable(false)->default(true);
             $table->softDeletes();
             $table->timestamps();
         });

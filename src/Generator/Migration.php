@@ -28,7 +28,6 @@ class Migration extends Base
      * @var string[]
      */
     static $availableFunctions = [
-        "timestampsTz",
         "timestamps",
         "softDeletes",
     ];
@@ -82,6 +81,12 @@ class Migration extends Base
 
         //If object was initialized with SysDbTableDefinition - apply all fields
         If ($table instanceof SysDbTableDefinition) {
+
+            //Add id by default
+            $this->addField(["name" => "id",
+                             "type" => "bigIncrements",
+                            ]);
+
             /* @var SysDbTableDefinition $sysDbFieldDefinition */
             foreach ($table->sysDbFieldDefinitions as $sysDbFieldDefinition) {
                 $this->addField(["name"     => $sysDbFieldDefinition->name,
@@ -91,6 +96,12 @@ class Migration extends Base
                                  "default"  => $sysDbFieldDefinition->default,
                                 ]);
             }
+
+            //Add timestamps if active
+            if ($table->use_timestamps) $this->addFunction("timestamps");
+
+            //Set if table has soft delete
+            if ($table->use_soft_deletes) $this->addFunction("softDeletes");
         }
 
         return $this;
@@ -130,6 +141,7 @@ class Migration extends Base
         //Use function name as "type" and make the "name" empty to generate the correct output
         $this->fields[$function] = ["type" => $function, "name" => new PhpLiteral('')];
     }
+
 
     /**
      * Write migration to disk

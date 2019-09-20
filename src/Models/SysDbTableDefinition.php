@@ -13,6 +13,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * Class SysDbTableDefinition
  *
  * @property string name
+ * @property bool use_timestamps
+ * @property bool use_soft_deletes
  * @property SysDbFieldDefinition sysDbFieldDefinitions
  * @package ZZGo\Models
  */
@@ -23,7 +25,7 @@ class SysDbTableDefinition extends Model
     /**
      * @var array
      */
-    protected $fillable = ['name'];
+    protected $fillable = ['name', 'use_timestamps','use_soft_deletes'];
 
     /**
      * @var array
