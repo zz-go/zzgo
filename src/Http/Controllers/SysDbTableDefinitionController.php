@@ -7,6 +7,7 @@
 namespace ZZGo\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Artisan;
 use ZZGo\Generator\Controller as GeneratorController;
 use ZZGo\Generator\Migration;
 use ZZGo\Generator\Model;
@@ -30,11 +31,12 @@ class SysDbTableDefinitionController extends Controller
         return response()->json(SysDbTableDefinition::all());
     }
 
+
     /**
      * Show single SysDbTableDefinition
      *
-     * @param SysDbTableDefinition $SysDbTableDefinition
-     * @return mixed
+     * @param SysDbTableDefinition $sysDbTableDefinition
+     * @return \Illuminate\Http\JsonResponse
      */
     public function show(SysDbTableDefinition $sysDbTableDefinition)
     {
@@ -86,6 +88,9 @@ class SysDbTableDefinitionController extends Controller
             (new Model($data_definition))->materialize();
             (new GeneratorController($data_definition))->materialize();
         }
+
+        //Execute migrations
+        Artisan::call('migrate');
 
         return response()->json(null, 204);
     }
