@@ -1,0 +1,1 @@
+    $table->{{type}}({{name}})->default({{default}})->index({{index}})->unsigned({{unsigned}});

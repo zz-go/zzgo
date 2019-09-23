@@ -6,6 +6,7 @@
 
 namespace ZZGo\Generator;
 
+use Illuminate\Filesystem\Filesystem;
 use Nette\PhpGenerator\ClassType;
 use Nette\PhpGenerator\Method;
 use Nette\PhpGenerator\PhpFile;
@@ -44,15 +45,23 @@ abstract class Base
      */
     protected $targetFile;
 
+    /**
+     * @var Filesystem
+     */
+    protected $filesystem;
+
 
     /**
      * Base constructor.
      *
      * @param string $className
      * @param string $namespace
+     * @throws \Illuminate\Contracts\Container\BindingResolutionException
      */
     public function __construct(string $className = "", string $namespace = "")
     {
+        $this->filesystem = app()->make(Filesystem::class);
+
         //Create file
         $this->file = new PhpFile();
         $this->file->addComment('This file is auto-generated.');
@@ -130,5 +139,31 @@ abstract class Base
             file_put_contents($apiFile, "\n\ninclude_once(__DIR__ . '/api_zzgo.php');",
                               FILE_APPEND | LOCK_EX);
         }
+    }
+
+
+    /**
+     * Get content of stub file
+     *
+     * @param string $stubName
+     * @return string
+     * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
+     */
+    protected function getStub(string $stubName): string
+    {
+        return $this->filesystem->get(__DIR__ . "/stubs/" . strtolower(static::STUB_FOLDER . "/$stubName.stub"));
+    }
+
+
+    /**
+     * Check if stub file exists
+     *
+     * @param string $stubName
+     * @return bool
+     * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
+     */
+    protected function getStubExists(string $stubName): bool
+    {
+        return $this->filesystem->exists(__DIR__ . "/stubs/" . strtolower(static::STUB_FOLDER . "/$stubName.stub"));
     }
 }

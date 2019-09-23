@@ -18,9 +18,25 @@ use ZZGo\Models\SysDbTableDefinition;
 class Migration extends Base
 {
     /**
+     * Prefix for all stubs used in this class
+     */
+    const STUB_FOLDER = "migration";
+
+    /**
      * Prefix used for functions used for adding options
      */
-    const OPTION_FNC_PREFIX = "optionFnc";
+    const STUB_FNC_PREFIX = "addStub";
+
+    /**
+     * Supported delete options
+     *
+     * @var string[]
+     */
+    static $onDeleteOptions = [
+        'set null',
+        'cascade',
+        'restrict',
+    ];
 
     /**
      * Supported function for migration files
@@ -53,6 +69,12 @@ class Migration extends Base
      */
     protected $fields = [];
 
+    /**
+     * Relations added to the migration
+     *
+     * @var array
+     */
+    protected $relations = [];
 
     /**
      * Migration constructor.
@@ -102,6 +124,8 @@ class Migration extends Base
 
             //Set if table has soft delete
             if ($table->use_soft_deletes) $this->addFunction("softDeletes");
+
+            $this->addRelatedTable("belongsTo", "test");
         }
 
         return $this;
@@ -122,7 +146,49 @@ class Migration extends Base
             throw new \Exception("Field {$data['name']} already exists");
         }
 
+        //Check and adept default value based on type of field
+        if (array_key_exists("default", $data) && array_key_exists("type", $data)) {
+
+            if (preg_match("/integer/i", $data["type"])) {
+                $data["default"] = intval($data["default"]);
+            } else if (
+                preg_match("/float/i", $data["type"]) ||
+                preg_match("/decimal/i", $data["type"]) ||
+                preg_match("/double/i", $data["type"])
+            ) {
+                $data["default"] = floatval($data["default"]);
+            } else if (preg_match("/bool/i", $data["type"])) {
+                $data["default"] = (bool)$data["default"];
+            }
+        }
+
+        //Assign template value and data
+        $data["template"]            = "field";
         $this->fields[$data['name']] = $data;
+    }
+
+
+    /**
+     * @param $type
+     * @param $targetTable
+     * @param string $targetField
+     * @param string $onDelete
+     * @throws \Exception
+     */
+    public function addRelation($type, $targetTable, $targetField = "id", $onDelete = 'cascade')
+    {
+        if (array_key_exists($onDelete, self::$onDeleteOptions)) {
+            throw new \Exception("'$onDelete' is no valid option for onDelete");
+        }
+
+        $this->relations[] = [
+            "type"        => $type,
+            "targetTable" => $targetTable,
+            "targetField" => $targetField,
+            "foreignKey"  => $targetTable . "_" . $targetField,
+            "onDelete"    => $onDelete,
+            "template"    => "relation",
+        ];
     }
 
 
@@ -139,9 +205,30 @@ class Migration extends Base
         }
 
         //Use function name as "type" and make the "name" empty to generate the correct output
-        $this->fields[$function] = ["type" => $function, "name" => new PhpLiteral('')];
+        $this->fields[$function] = ["type" => $function, "template" => "option"];
     }
 
+    /**
+     * Add relation to other table
+     *
+     * @param $type
+     * @param $targetTable
+     * @param string $targetField
+     * @param string $onDelete
+     * @throws \Exception
+     */
+    public function addRelatedTable($type, $targetTable, $targetField = "id", $onDelete = 'cascade')
+    {
+        switch ($type) {
+            case "belongsTo":
+                $this->addField(["name" => $targetTable . "_" . $targetField,
+                                 "type" => "bigInteger",
+                                ]);
+
+                $this->addRelation($type, $targetTable, $targetField, $onDelete);
+                break;
+        }
+    }
 
     /**
      * Write migration to disk
@@ -150,20 +237,15 @@ class Migration extends Base
     {
         //Generate body of up-method
         $this->methods['up']->addBody(' Schema::create(?, function (Blueprint $table) {', [$this->tableName]);
-        foreach ($this->fields as $name => $data) {
-
-            //Generate string for additional options
-            $optionsString = '';
-            foreach ($data as $option => $optionValue) {
-                if (method_exists($this, self::OPTION_FNC_PREFIX . ucfirst($option))) {
-                    $optionsString .= $this->{self::OPTION_FNC_PREFIX . ucfirst($option)}($optionValue);
-                }
-            }
-            $options = new PhpLiteral($optionsString);
-
-
-            $this->methods['up']->addBody('    $table->' . $data['type'] . '(?)?;', [$data['name'], $options]);
+        foreach ($this->fields as $field) {
+            $this->methods['up']->addBody($this->{self::STUB_FNC_PREFIX . ucfirst($field["type"])}($field));
         }
+
+        //Add relations
+        foreach ($this->relations as $relation) {
+            $this->methods['up']->addBody($this->{self::STUB_FNC_PREFIX . ucfirst($relation["type"])}($relation));
+        }
+
         $this->methods['up']->addBody('});');
 
         //Generate body of down-method
@@ -176,76 +258,52 @@ class Migration extends Base
         parent::materialize();
     }
 
-    /**
-     * Option for field: Adds index to field
-     *
-     * @param $option
-     * @return string
-     */
-    protected function optionFncIndex($option)
-    {
-        if ($option) {
-            return "->index()";
-        }
-
-        return '';
-    }
 
     /**
-     * Option for field: Marks field as unsigned
-     *
-     * @param $option
-     * @return string
+     * @param $name
+     * @param $arguments
+     * @return mixed
+     * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
      */
-    protected function optionFncUnsigned($option)
+    public function __call($name, $arguments)
     {
-        if ($option) {
-            return "->unsigned()";
+        if (preg_match("/^" . self::STUB_FNC_PREFIX . "/", $name) &&
+            is_array($arguments) && array_key_exists(0, $arguments) &&
+            is_array($arguments[0]) && array_key_exists("template", $arguments[0])
+            && array_key_exists("template", $arguments[0])) {
+
+            $template = $arguments[0]["template"];
+            $type     = $arguments[0]["type"];
+            unset($arguments[0]["template"]);
+            unset($arguments[0]["type"]);
+            ksort($arguments[0]);
+            if ($variant = implode(".", array_keys($arguments[0]))) {
+                $variant = ".$variant";
+            }
+
+            //Create variable names for placeholder in stub
+            $varNames = array_keys($arguments[0]);
+            array_unshift($varNames, "type");
+            array_walk($varNames, function (& $element) {
+                $element = "{{" . $element . "}}";
+            });
+
+            //Create variable values
+            $varValues = array_values($arguments[0]);
+            array_walk($varValues, function (& $element) {
+                if (is_string($element)) {
+                    //Put character values into double quotes
+                    $element = '"' . $element . '"';
+                } else if (is_bool($element)) {
+                    //Create a string for boolean values
+                    $element = $element ? 'true' : 'false';
+                }
+            });
+            array_unshift($varValues, $type);
+
+            return rtrim(str_replace($varNames, $varValues, $this->getStub($template . $variant)));
         }
-
-        return '';
-    }
-
-    /**
-     * Option for field: Marks field as nullable
-     *
-     * @param $option
-     * @return string
-     */
-    protected function optionFncNullable($option)
-    {
-        if ($option) {
-            return "->nullable()";
-        }
-
-        return '';
-    }
-
-    /**
-     * Option for field: Defines default-value for field
-     *
-     * @param $option
-     * @return string
-     */
-    protected function optionFncDefault($option)
-    {
-        if ($option === true) {
-            return "->default(true)";
-
-        } elseif ($option === false) {
-            return "->default(false)";
-
-        } elseif (is_numeric($option)) {
-            return "->default($option)";
-
-        } elseif ($option === null) {
-            return "->default(null)";
-
-        } elseif (is_string($option)) {
-            return "->default('$option')";
-        }
-
-        return "";
+        trigger_error('Call to undefined method ' . __CLASS__ . '::' . $name . '()', E_USER_ERROR);
     }
 
     /**
