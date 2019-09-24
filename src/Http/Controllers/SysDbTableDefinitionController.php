@@ -8,9 +8,15 @@ namespace ZZGo\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Artisan;
+use League\Fractal\Manager;
+use League\Fractal\Resource\Collection;
+use League\Fractal\Resource\Item;
+use League\Fractal\Serializer\DataArraySerializer;
+use League\Fractal\Serializer\JsonApiSerializer;
 use ZZGo\Generator\Controller as GeneratorController;
 use ZZGo\Generator\Migration;
 use ZZGo\Generator\Model;
+use ZZGo\Http\Transformers\GenericTransformer;
 use ZZGo\Models\SysDbTableDefinition;
 use Illuminate\Http\Request;
 
@@ -21,6 +27,19 @@ use Illuminate\Http\Request;
  */
 class SysDbTableDefinitionController extends Controller
 {
+
+    protected $request;
+    protected $response;
+    protected $manager;
+
+
+    public function __construct(Request $request)
+    {
+        $this->request = $request;
+        $this->manager = new Manager();
+        $this->manager->setSerializer(new JsonApiSerializer('http://zzgo.local/api'));
+    }
+
     /**
      * List all chairs
      *
@@ -40,7 +59,9 @@ class SysDbTableDefinitionController extends Controller
      */
     public function show(SysDbTableDefinition $sysDbTableDefinition)
     {
-        return response()->json($sysDbTableDefinition);
+        $resouce = new Item($sysDbTableDefinition, new GenericTransformer, get_class($sysDbTableDefinition));
+        $data = $this->manager->createData($resouce);
+        return $data->toArray();
     }
 
 
