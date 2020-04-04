@@ -6,18 +6,28 @@
 
 namespace ZZGo\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
  * Class SysDbFieldDefinition
  *
+ * @property int id
+ * @property int sys_db_table_definition_id
  * @property string name
  * @property string type
  * @property string index
  * @property boolean unsigned
  * @property boolean nullable
  * @property string default
+ *
+ * @property Carbon created_at
+ * @property Carbon updated_at
+ * @property Carbon deleted_at
+ *
+ * @property SysDbTableDefinition sys_db_table_definition
+ *
  * @package ZZGo\Models
  */
 class SysDbFieldDefinition extends Model

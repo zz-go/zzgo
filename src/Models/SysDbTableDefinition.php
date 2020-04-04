@@ -6,16 +6,26 @@
 
 namespace ZZGo\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Collection;
 
 /**
  * Class SysDbTableDefinition
  *
+ * @property int id
  * @property string name
  * @property bool use_timestamps
  * @property bool use_soft_deletes
- * @property SysDbFieldDefinition sysDbFieldDefinitions
+ *
+ * @property Carbon created_at
+ * @property Carbon updated_at
+ * @property Carbon deleted_at
+ *
+ *
+ * @property Collection|SysDbFieldDefinition[] sysDbFieldDefinitions
+ *
  * @package ZZGo\Models
  */
 class SysDbTableDefinition extends Model
@@ -25,7 +35,7 @@ class SysDbTableDefinition extends Model
     /**
      * @var array
      */
-    protected $fillable = ['name', 'use_timestamps','use_soft_deletes'];
+    protected $fillable = ['name', 'use_timestamps', 'use_soft_deletes'];
 
     /**
      * @var array
