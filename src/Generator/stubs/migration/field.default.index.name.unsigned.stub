@@ -1,1 +1,1 @@
-    $table->{{type}}({{name}})->default({{default}})->index({{index}})->unsigned({{unsigned}});
+    $table->{{type}}({{name}})->default({{default}})->index({{index}})->unsigned();

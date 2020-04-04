@@ -22,6 +22,7 @@ Route::group([
         Route::get('/', ['uses' => 'SysDbTableDefinitionController@show']);
         Route::delete('/', ['uses' => 'SysDbTableDefinitionController@destroy']);
         Route::post('/materialize', ['uses' => 'SysDbTableDefinitionController@materialize']);
+        Route::post('/link', ['uses' => 'SysDbTableDefinitionController@link']);
 
         Route::group([
                          'prefix' => 'sys-db-field-definitions',
@@ -37,6 +38,7 @@ Route::group([
 
                 Route::get('/', ['uses' => 'SysDbFieldDefinitionController@show']);
                 Route::delete('/', ['uses' => 'SysDbFieldDefinitionController@destroy']);
+                Route::post('/link', ['uses' => 'SysDbFieldDefinitionController@link']);
 
             });
         });

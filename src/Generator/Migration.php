@@ -7,7 +7,6 @@
 namespace ZZGo\Generator;
 
 use Illuminate\Support\Str;
-use Nette\PhpGenerator\PhpLiteral;
 use ZZGo\Models\SysDbTableDefinition;
 
 /**
@@ -109,14 +108,21 @@ class Migration extends Base
                              "type" => "bigIncrements",
                             ]);
 
-            /* @var SysDbTableDefinition $sysDbFieldDefinition */
+            //Generate field definitions
             foreach ($table->sysDbFieldDefinitions as $sysDbFieldDefinition) {
                 $this->addField(["name"     => $sysDbFieldDefinition->name,
                                  "type"     => $sysDbFieldDefinition->type,
                                  "index"    => $sysDbFieldDefinition->index,
                                  "unsigned" => $sysDbFieldDefinition->unsigned,
                                  "default"  => $sysDbFieldDefinition->default,
+                                 "nullable" => $sysDbFieldDefinition->nullable,
                                 ]);
+            }
+
+            //Generate relations
+            foreach ($table->sysDbRelatedTables as $sysDbRelatedTable) {
+                $this->addRelatedTable($sysDbRelatedTable->type,
+                                       $sysDbRelatedTable->sysDbTargetTableDefinition);
             }
 
             //Add timestamps if active
@@ -124,8 +130,6 @@ class Migration extends Base
 
             //Set if table has soft delete
             if ($table->use_soft_deletes) $this->addFunction("softDeletes");
-
-            $this->addRelatedTable("belongsTo", "test");
         }
 
         return $this;
@@ -147,8 +151,8 @@ class Migration extends Base
         }
 
         //Check and adept default value based on type of field
-        if (array_key_exists("default", $data) && array_key_exists("type", $data)) {
-
+        if (array_key_exists("default", $data) && !is_null($data["default"]) &&
+            array_key_exists("type", $data)) {
             if (preg_match("/integer/i", $data["type"])) {
                 $data["default"] = intval($data["default"]);
             } else if (
@@ -162,6 +166,13 @@ class Migration extends Base
             }
         }
 
+        //Unset null-values (except default)
+        foreach ($data as $attribute => $value) {
+            if (is_null($value) && $attribute != "default") {
+                unset($data[$attribute]);
+            }
+        }
+
         //Assign template value and data
         $data["template"]            = "field";
         $this->fields[$data['name']] = $data;
@@ -169,13 +180,16 @@ class Migration extends Base
 
 
     /**
-     * @param $type
-     * @param $targetTable
+     * @param string $type
+     * @param SysDbTableDefinition $targetTable
      * @param string $targetField
      * @param string $onDelete
      * @throws \Exception
      */
-    public function addRelation($type, $targetTable, $targetField = "id", $onDelete = 'cascade')
+    public function addRelation(string $type,
+                                SysDbTableDefinition $targetTable,
+                                string $targetField = "id",
+                                string $onDelete = 'cascade')
     {
         if (array_key_exists($onDelete, self::$onDeleteOptions)) {
             throw new \Exception("'$onDelete' is no valid option for onDelete");
@@ -183,9 +197,9 @@ class Migration extends Base
 
         $this->relations[] = [
             "type"        => $type,
-            "targetTable" => $targetTable,
+            "targetTable" => $targetTable->getSqlName(),
             "targetField" => $targetField,
-            "foreignKey"  => $targetTable . "_" . $targetField,
+            "foreignKey"  => $targetTable->name . "_" . $targetField,
             "onDelete"    => $onDelete,
             "template"    => "relation",
         ];
@@ -211,18 +225,23 @@ class Migration extends Base
     /**
      * Add relation to other table
      *
-     * @param $type
-     * @param $targetTable
+     * @param string $type
+     * @param SysDbTableDefinition $targetTable
      * @param string $targetField
      * @param string $onDelete
      * @throws \Exception
      */
-    public function addRelatedTable($type, $targetTable, $targetField = "id", $onDelete = 'cascade')
+    public function addRelatedTable(string $type,
+                                    SysDbTableDefinition $targetTable,
+                                    string $targetField = "id",
+                                    string $onDelete = 'cascade')
     {
+        //TODO: Implement all relationship types
         switch ($type) {
             case "belongsTo":
-                $this->addField(["name" => $targetTable . "_" . $targetField,
-                                 "type" => "bigInteger",
+                $this->addField(["name"     => $targetTable->name . "_" . $targetField,
+                                 "type"     => "bigInteger",
+                                 "unsigned" => true,
                                 ]);
 
                 $this->addRelation($type, $targetTable, $targetField, $onDelete);
@@ -284,14 +303,17 @@ class Migration extends Base
             //Create variable names for placeholder in stub
             $varNames = array_keys($arguments[0]);
             array_unshift($varNames, "type");
-            array_walk($varNames, function (& $element) {
+            array_walk($varNames, function (&$element) {
                 $element = "{{" . $element . "}}";
             });
 
             //Create variable values
             $varValues = array_values($arguments[0]);
-            array_walk($varValues, function (& $element) {
-                if (is_string($element)) {
+            array_walk($varValues, function (&$element) {
+                if (is_null($element)) {
+                    //Null as default is a null-string
+                    $element = "null";
+                } else if (is_string($element)) {
                     //Put character values into double quotes
                     $element = '"' . $element . '"';
                 } else if (is_bool($element)) {

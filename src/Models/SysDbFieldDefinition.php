@@ -26,7 +26,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property Carbon updated_at
  * @property Carbon deleted_at
  *
- * @property SysDbTableDefinition sys_db_table_definition
+ * @property SysDbTableDefinition sysDbTableDefinition
  *
  * @package ZZGo\Models
  */
@@ -42,7 +42,7 @@ class SysDbFieldDefinition extends Model
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function sys_db_table_definition()
+    public function sysDbTableDefinition()
     {
         return $this->belongsTo(SysDbTableDefinition::class);
     }

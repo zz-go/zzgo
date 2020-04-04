@@ -10,6 +10,7 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Str;
 
 /**
  * Class SysDbTableDefinition
@@ -25,6 +26,7 @@ use Illuminate\Support\Collection;
  *
  *
  * @property Collection|SysDbFieldDefinition[] sysDbFieldDefinitions
+ * @property Collection|SysDbRelatedTable[] sysDbRelatedTables
  *
  * @package ZZGo\Models
  */
@@ -51,6 +53,14 @@ class SysDbTableDefinition extends Model
     }
 
     /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function sysDbRelatedTables()
+    {
+        return $this->hasMany(SysDbRelatedTable::class, 'sys_db_source_table_definition_id');
+    }
+
+    /**
      * Get the route key for the model.
      *
      * @return string
@@ -58,5 +68,14 @@ class SysDbTableDefinition extends Model
     public function getRouteKeyName()
     {
         return 'name';
+    }
+
+    /**
+     * Returns the name the the SQL-table will finally have
+     *
+     * @return string
+     */
+    public function getSqlName() {
+        return Str::snake(Str::pluralStudly(class_basename($this->name)));
     }
 }

@@ -74,4 +74,17 @@ class SysDbFieldDefinitionController extends Controller
 
         return response()->json(null, 204);
     }
+
+
+    /**
+     * Link to other field //TODO: Implement Me
+     *
+     * @param SysDbTableDefinition $sysDbTableDefinition
+     * @param SysDbFieldDefinition $sysDbFieldDefinition
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function link(SysDbTableDefinition $sysDbTableDefinition, SysDbFieldDefinition $sysDbFieldDefinition)
+    {
+        return response()->json(null, 204);
+    }
 }

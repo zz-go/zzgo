@@ -36,13 +36,15 @@ class DefaultReturnJson
     {
         // First, set the header so any other middleware knows we're
         // dealing with a should-be JSON response.
-        $request->headers->set('Accept', 'application/json');
+        if ($request->headers->get('Accept', '*/*') == '*/*') {
+            $request->headers->set('Accept', 'application/json');
+        }
 
         // Get the response
         $response = $next($request);
 
-        // If the response is not strictly a JsonResponse, we make it
-        if (!$response instanceof JsonResponse) {
+        // If the response is not strictly a JsonResponse, we make it (if requested)
+        if ($request->headers->get('Accept') == 'application/json' && !$response instanceof JsonResponse) {
             $response = $this->factory->json(
                 $response->content(),
                 $response->status(),

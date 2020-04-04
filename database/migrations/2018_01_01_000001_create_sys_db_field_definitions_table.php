@@ -23,7 +23,7 @@ class CreateSysDbFieldDefinitionsTable extends Migration
 
             $table->string('name')->nullable(false)->unique();
             $table->string('type')->nullable(false);
-            $table->boolean('index')->default(false);
+            $table->string('index')->nullable(true);
             $table->boolean('unsigned')->nullable(true);
             $table->boolean('nullable')->default(false);
             $table->string('default')->nullable(true);

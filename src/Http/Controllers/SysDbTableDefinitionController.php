@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Artisan;
 use ZZGo\Generator\Controller as GeneratorController;
 use ZZGo\Generator\Migration;
 use ZZGo\Generator\Model;
+use ZZGo\Models\SysDbRelatedTable;
 use ZZGo\Models\SysDbTableDefinition;
 use Illuminate\Http\Request;
 
@@ -22,9 +23,9 @@ use Illuminate\Http\Request;
 class SysDbTableDefinitionController extends Controller
 {
     /**
-     * List all chairs
+     * List all SysDbTableDefinitions
      *
-     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
     public function index()
     {
@@ -48,7 +49,7 @@ class SysDbTableDefinitionController extends Controller
      * Create new SysDbTableDefinition
      *
      * @param Request $request
-     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
     public function store(Request $request)
     {
@@ -72,6 +73,28 @@ class SysDbTableDefinitionController extends Controller
         return response()->json(null, 204);
     }
 
+    /**
+     * Add related table //TODO: This is a draft
+     *
+     * @param SysDbTableDefinition $sysDbTableDefinition
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function link(SysDbTableDefinition $sysDbTableDefinition, Request $request)
+    {
+        SysDbRelatedTable::create(
+            [
+                "name"                              => $request->input("name",
+                                                                       $sysDbTableDefinition->name . "_" . rand(1000, 9999)),
+                "type"                              => $request->input("type"),
+                "sys_db_source_table_definition_id" => $sysDbTableDefinition->id,
+                "sys_db_target_table_definition_id" => $request->input("target_id"),
+                "on_delete"                         => $request->input("on_delete"),
+            ]);
+
+        return response()->json(null, 204);
+    }
+
 
     /**
      * Generate all defined data definitions
@@ -90,7 +113,7 @@ class SysDbTableDefinitionController extends Controller
         }
 
         //Execute migrations
-        Artisan::call('migrate');
+//        Artisan::call('migrate');
 
         return response()->json(null, 204);
     }
