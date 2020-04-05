@@ -1,1 +1,0 @@
-    $table->foreign({{foreignKey}})->references({{targetField}})->on({{targetTable}})->onDelete({{onDelete}});

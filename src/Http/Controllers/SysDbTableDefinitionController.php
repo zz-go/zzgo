@@ -7,6 +7,7 @@
 namespace ZZGo\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use ZZGo\Generator\Constraint;
 use ZZGo\Generator\Controller as GeneratorController;
 use ZZGo\Generator\Migration;
 use ZZGo\Generator\Model;
@@ -110,6 +111,12 @@ class SysDbTableDefinitionController extends Controller
             (new Model($data_definition))->materialize();
             (new GeneratorController($data_definition))->materialize();
         }
+
+        //Add constraints as last step
+        foreach ($data_definitions as $data_definition) {
+            (new Constraint($data_definition))->materialize();
+        }
+
 
         //Execute migrations
 //        Artisan::call('migrate');

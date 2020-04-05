@@ -9,31 +9,31 @@ use Illuminate\Support\Str;
 use ZZGo\Models\SysDbTableDefinition;
 
 /**
- * Class Migration
+ * Class Relation
  *
- * @package ZZGo\Migration
+ * @package ZZGo\Generator
  */
-class Migration extends Base
+class Constraint extends Base
 {
     /**
      * Prefix for all stubs used in this class
      */
-    const STUB_FOLDER = "migration";
+    const STUB_FOLDER = "constraint";
 
     /**
      * Prefix used for functions used for adding options
      */
     const STUB_FNC_PREFIX = "addStub";
 
-
     /**
-     * Supported function for migration files
+     * Supported delete options
      *
      * @var string[]
      */
-    static $availableFunctions = [
-        "timestamps",
-        "softDeletes",
+    static $onDeleteOptions = [
+        'set null',
+        'cascade',
+        'restrict',
     ];
 
     /**
@@ -49,13 +49,6 @@ class Migration extends Base
      * @var string
      */
     protected $className;
-
-    /**
-     * Fields added to the migration
-     *
-     * @var array
-     */
-    protected $fields = [];
 
     /**
      * Relations added to the migration
@@ -76,9 +69,9 @@ class Migration extends Base
         $this->tableName = Str::snake(Str::pluralStudly(class_basename($inputName)));
         $this->className = Str::studly($this->tableName);
 
-        parent::__construct("Create" . ucfirst($this->className) . "Table");
+        parent::__construct("Add" . ucfirst($this->className) . "Constraints");
 
-        //Default use for migrations
+        //Default use for constraint migrations
         $this->file->addUse("Illuminate\Support\Facades\Schema");
         $this->file->addUse("Illuminate\Database\Schema\Blueprint");
         $this->file->addUse("Illuminate\Database\Migrations\Migration");
@@ -92,137 +85,74 @@ class Migration extends Base
         //If object was initialized with SysDbTableDefinition - apply all fields
         If ($table instanceof SysDbTableDefinition) {
 
-            //Add id by default
-            $this->addField(["name" => "id",
-                             "type" => "bigIncrements",
-                            ]);
-
-            //Generate field definitions
-            foreach ($table->sysDbFieldDefinitions as $sysDbFieldDefinition) {
-                $this->addField(["name"     => $sysDbFieldDefinition->name,
-                                 "type"     => $sysDbFieldDefinition->type,
-                                 "index"    => $sysDbFieldDefinition->index,
-                                 "unsigned" => $sysDbFieldDefinition->unsigned,
-                                 "default"  => $sysDbFieldDefinition->default,
-                                 "nullable" => $sysDbFieldDefinition->nullable,
-                                ]);
-            }
-
             //Generate relations
             foreach ($table->sysDbRelatedTables as $sysDbRelatedTable) {
-                $this->addRelatedTable($sysDbRelatedTable->type,
-                                       $sysDbRelatedTable->sysDbTargetTableDefinition);
+                $this->addRelation($sysDbRelatedTable->type,
+                                   $sysDbRelatedTable->sysDbTargetTableDefinition);
             }
-
-            //Add timestamps if active
-            if ($table->use_timestamps) $this->addFunction("timestamps");
-
-            //Set if table has soft delete
-            if ($table->use_soft_deletes) $this->addFunction("softDeletes");
         }
 
         return $this;
     }
 
-    /**
-     * @param $data
-     * @throws \Exception
-     */
-    public function addField($data)
-    {
-        if (!array_key_exists('name', $data) ||
-            !array_key_exists('type', $data)) {
-            throw new \Exception("Name / Type are mandatory");
-        }
-
-        if (array_key_exists($data['name'], $this->fields)) {
-            throw new \Exception("Field {$data['name']} already exists");
-        }
-
-        //Check and adept default value based on type of field
-        if (array_key_exists("default", $data) && !is_null($data["default"]) &&
-            array_key_exists("type", $data)) {
-            if (preg_match("/integer/i", $data["type"])) {
-                $data["default"] = intval($data["default"]);
-            } else if (
-                preg_match("/float/i", $data["type"]) ||
-                preg_match("/decimal/i", $data["type"]) ||
-                preg_match("/double/i", $data["type"])
-            ) {
-                $data["default"] = floatval($data["default"]);
-            } else if (preg_match("/bool/i", $data["type"])) {
-                $data["default"] = (bool)$data["default"];
-            }
-        }
-
-        //Unset null-values (except default)
-        foreach ($data as $attribute => $value) {
-            if (is_null($value) && $attribute != "default") {
-                unset($data[$attribute]);
-            }
-        }
-
-        //Assign template value and data
-        $data["template"]            = "field";
-        $this->fields[$data['name']] = $data;
-    }
-
 
     /**
-     * Add a function to migration class
-     *
-     * @param $function
-     * @throws \Exception
-     */
-    public function addFunction($function)
-    {
-        if (!in_array($function, self::$availableFunctions)) {
-            throw new \Exception("Function $function is not available in migrations.");
-        }
-
-        //Use function name as "type" and make the "name" empty to generate the correct output
-        $this->fields[$function] = ["type" => $function, "template" => "option"];
-    }
-
-    /**
-     * Add relation to other table
-     *
      * @param string $type
      * @param SysDbTableDefinition $targetTable
      * @param string $targetField
+     * @param string $onDelete
      * @throws \Exception
      */
-    public function addRelatedTable(string $type, SysDbTableDefinition $targetTable, string $targetField = "id")
+    public function addRelation(string $type,
+                                SysDbTableDefinition $targetTable,
+                                string $targetField = "id",
+                                string $onDelete = 'cascade')
     {
-        //TODO: Implement all relationship types
-        switch ($type) {
-            case "belongsTo":
-                $this->addField(["name"     => $targetTable->name . "_" . $targetField,
-                                 "type"     => "bigInteger",
-                                 "unsigned" => true,
-                                ]);
+        if (array_key_exists($onDelete, self::$onDeleteOptions)) {
+            throw new \Exception("'$onDelete' is no valid option for onDelete");
         }
+
+        $this->relations[] = [
+            "type"        => $type,
+            "name"        => $this->createIndexName("foreign", [$targetField]),
+            "targetTable" => $targetTable->getSqlName(),
+            "targetField" => $targetField,
+            "foreignKey"  => $targetTable->name . "_" . $targetField,
+            "onDelete"    => $onDelete,
+            "template"    => "relation",
+        ];
     }
 
+
     /**
-     * Write migration to disk (without constraints)
+     * Write migration to disk (only constraints)
      */
     public function materialize()
     {
         //Generate body of up-method
-        $this->methods['up']->addBody(' Schema::create(?, function (Blueprint $table) {', [$this->tableName]);
-        foreach ($this->fields as $field) {
-            $this->methods['up']->addBody($this->{self::STUB_FNC_PREFIX . ucfirst($field["type"])}($field));
+        $this->methods['up']->addBody(' Schema::table(?, function (Blueprint $table) {', [$this->tableName]);
+        //Add relations to body
+        foreach ($this->relations as $relation) {
+            $this->methods['up']->addBody($this->{self::STUB_FNC_PREFIX . ucfirst($relation["type"])}($relation));
         }
-
         $this->methods['up']->addBody('});');
 
         //Generate body of down-method
-        $this->methods['down']->addBody(' Schema::dropIfExists(?);', [$this->tableName]);
+        $this->methods['down']->addBody(' Schema::table(?, function (Blueprint $table) {', [$this->tableName]);
+        //Add drop relations to body
+        foreach ($this->relations as $relation) {
+            $this->methods['down']->addBody($this->{self::STUB_FNC_PREFIX . ucfirst($relation["type"])}(
+                ["template" => "drop.relation",
+                 "type"     => $relation["type"],
+                 "name"     => $relation["name"],
+                ]));
+        }
+        $this->methods['down']->addBody('});');
+
 
         //Define filename of output
         $this->targetFile = database_path() . DIRECTORY_SEPARATOR . 'migrations' . DIRECTORY_SEPARATOR
-            . $this->getDatePrefix() . '_' . "create_{$this->tableName}_table" . '.php';
+            . $this->getDatePrefix() . '_' . "add_{$this->tableName}_constraints" . '.php';
 
         parent::materialize();
     }

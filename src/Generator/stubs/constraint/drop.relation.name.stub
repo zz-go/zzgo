@@ -1,0 +1,1 @@
+    $table->dropForeign({{name}});
