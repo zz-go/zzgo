@@ -27,6 +27,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property SysDbTableDefinition sysDbSourceTableDefinition
  * @property SysDbTableDefinition sysDbTargetTableDefinition
  *
+ * @method static create(array $attributes)
+ *
  * @package ZZGo\Models
  */
 class SysDbRelatedTable extends Model

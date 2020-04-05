@@ -1,7 +1,6 @@
 <?php
 /**
- * @copyright LOOP.
- * @author Manfred John <manfred.john@agentur-loop.com>
+ * @author Manfred John <zzgo@mave.at>
  */
 
 namespace ZZGo\Generator;
@@ -281,11 +280,12 @@ class Migration extends Base
     /**
      * @param $name
      * @param $arguments
-     * @return mixed
+     * @return string|null
      * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
      */
     public function __call($name, $arguments)
     {
+        //Add content via stub file
         if (preg_match("/^" . self::STUB_FNC_PREFIX . "/", $name) &&
             is_array($arguments) && array_key_exists(0, $arguments) &&
             is_array($arguments[0]) && array_key_exists("template", $arguments[0])
@@ -326,6 +326,8 @@ class Migration extends Base
             return rtrim(str_replace($varNames, $varValues, $this->getStub($template . $variant)));
         }
         trigger_error('Call to undefined method ' . __CLASS__ . '::' . $name . '()', E_USER_ERROR);
+
+        return null;
     }
 
     /**

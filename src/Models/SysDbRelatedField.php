@@ -27,6 +27,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property SysDbFieldDefinition sysDbSourceFieldDefinition
  * @property SysDbFieldDefinition sysDbTargetFieldDefinition
  *
+ * @method static create(array $attributes)
+ *
  * @package ZZGo\Models
  */
 class SysDbRelatedField extends Model

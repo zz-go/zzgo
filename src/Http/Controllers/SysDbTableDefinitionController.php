@@ -7,7 +7,6 @@
 namespace ZZGo\Http\Controllers;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Artisan;
 use ZZGo\Generator\Controller as GeneratorController;
 use ZZGo\Generator\Migration;
 use ZZGo\Generator\Model;
@@ -16,7 +15,7 @@ use ZZGo\Models\SysDbTableDefinition;
 use Illuminate\Http\Request;
 
 /**
- * Class ChairController
+ * Class SysDbTableDefinitionController
  *
  * @package ZZGo\Http\Controllers
  */

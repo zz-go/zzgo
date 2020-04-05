@@ -1,16 +1,15 @@
 <?php
 /**
- * @copyright LOOP.
- * @author Manfred John <manfred.john@agentur-loop.com>
+ * @author Manfred John <zzgo@mave.at>
  */
 
 namespace ZZGo\Generator;
 
 
 /**
- * Class Migration
+ * Class Route
  *
- * @package ZZGo\Migration
+ * @package ZZGo\Generator
  */
 class Route
 {

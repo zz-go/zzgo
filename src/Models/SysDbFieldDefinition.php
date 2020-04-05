@@ -28,6 +28,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  *
  * @property SysDbTableDefinition sysDbTableDefinition
  *
+ * @method static create(array $attributes)
+ *
  * @package ZZGo\Models
  */
 class SysDbFieldDefinition extends Model

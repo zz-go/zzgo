@@ -1,7 +1,6 @@
 <?php
 /**
- * @copyright LOOP.
- * @author Manfred John <manfred.john@agentur-loop.com>
+ * @author Manfred John <zzgo@mave.at>
  */
 
 namespace ZZGo\Generator;
@@ -160,7 +159,6 @@ abstract class Base
      *
      * @param string $stubName
      * @return bool
-     * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
      */
     protected function getStubExists(string $stubName): bool
     {

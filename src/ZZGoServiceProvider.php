@@ -9,6 +9,11 @@ use ZZGo\Console\ZZGo;
 use ZZGo\Http\Middleware\DefaultReturnJson;
 
 
+/**
+ * Class ZZGoServiceProvider
+ *
+ * @package ZZGo
+ */
 class ZZGoServiceProvider extends ServiceProvider
 {
     /**
@@ -23,7 +28,6 @@ class ZZGoServiceProvider extends ServiceProvider
                                 ZZGo::class,
                             ]);
         }
-
 
         //Migrations
         $this->loadMigrationsFrom(__DIR__ . '/../database/migrations');

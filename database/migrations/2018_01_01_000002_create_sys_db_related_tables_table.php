@@ -4,6 +4,9 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
+/**
+ * Class CreateSysDbRelatedTablesTable
+ */
 class CreateSysDbRelatedTablesTable extends Migration
 {
     /**
@@ -19,7 +22,6 @@ class CreateSysDbRelatedTablesTable extends Migration
             $table->string('name')->nullable(false)->unique();
             $table->string('type')->nullable(false);
             $table->string('on_delete')->nullable(false);
-
 
 
             $table->unsignedBigInteger('sys_db_source_table_definition_id');

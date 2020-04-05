@@ -24,9 +24,10 @@ use Illuminate\Support\Str;
  * @property Carbon updated_at
  * @property Carbon deleted_at
  *
- *
  * @property Collection|SysDbFieldDefinition[] sysDbFieldDefinitions
  * @property Collection|SysDbRelatedTable[] sysDbRelatedTables
+ *
+ * @method static create(array $attributes)
  *
  * @package ZZGo\Models
  */

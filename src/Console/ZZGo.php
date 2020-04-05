@@ -89,6 +89,7 @@ class ZZGo extends Command
 
     /**
      * @param $modelName
+     * @throws \Illuminate\Contracts\Container\BindingResolutionException
      */
     protected function createController($modelName)
     {

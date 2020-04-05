@@ -19,9 +19,9 @@ use ZZGo\Models\SysDbTableDefinition;
 class SysDbFieldDefinitionController extends Controller
 {
     /**
-     * List all chairs
+     * List all field definitions
      *
-     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
     public function index()
     {
@@ -32,11 +32,10 @@ class SysDbFieldDefinitionController extends Controller
     /**
      * Show single SysDbFieldDefinition
      *
-     * @param SysDbTableDefinition $sysDbTableDefinition
      * @param SysDbFieldDefinition $sysDbFieldDefinition
      * @return \Illuminate\Http\JsonResponse
      */
-    public function show(SysDbTableDefinition $sysDbTableDefinition, SysDbFieldDefinition $sysDbFieldDefinition)
+    public function show(SysDbFieldDefinition $sysDbFieldDefinition)
     {
         return response()->json($sysDbFieldDefinition);
     }
@@ -52,10 +51,10 @@ class SysDbFieldDefinitionController extends Controller
     public function store(SysDbTableDefinition $sysDbTableDefinition, Request $request)
     {
 
-        $xxx                               = $request->all();
-        $xxx['sys_db_table_definition_id'] = $sysDbTableDefinition->id;
+        $requestData                               = $request->all();
+        $requestData['sys_db_table_definition_id'] = $sysDbTableDefinition->id;
 
-        SysDbFieldDefinition::create($xxx);
+        SysDbFieldDefinition::create($requestData);
 
         return response()->json(null, 204);
     }

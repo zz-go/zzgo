@@ -1,7 +1,6 @@
 <?php
 /**
- * @copyright LOOP.
- * @author Manfred John <manfred.john@agentur-loop.com>
+ * @author Manfred John <zzgo@mave.at>
  */
 
 namespace ZZGo\Generator;
@@ -12,9 +11,9 @@ use ZZGo\Models\SysDbTableDefinition;
 
 
 /**
- * Class Migration
+ * Class Controller
  *
- * @package ZZGo\Migration
+ * @package ZZGo\Generator
  */
 class Controller extends Base
 {
@@ -32,9 +31,10 @@ class Controller extends Base
 
 
     /**
-     * Migration constructor.
+     * Controller constructor.
      *
-     * @param string|SysDbTableDefinition $model
+     * @param $model
+     * @throws \Illuminate\Contracts\Container\BindingResolutionException
      */
     public function __construct($model)
     {
