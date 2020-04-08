@@ -108,7 +108,7 @@ class Controller extends Base
                     ->addComment("@param {$this->modelName} \$" . strtolower($this->modelName))
                     ->addComment("@return {$this->modelName}")
                     ->setBody('return $' . strtolower($this->modelName) . ';')
-                    ->addParameter(strtolower($this->modelName))->setTypeHint('App\\Models\\' . $this->modelName);
+                    ->addParameter(strtolower($this->modelName))->setType('App\\Models\\' . $this->modelName);
 
         //POST
         $route          = new Route(
@@ -124,7 +124,7 @@ class Controller extends Base
                     ->addComment("@param Request \$request")
                     ->addComment("@return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response")
                     ->setBody("{$this->modelName}::create(\$request->all());\nreturn response(null, 204);")
-                    ->addParameter("request")->setTypeHint('Illuminate\Http\Request');
+                    ->addParameter("request")->setType('Illuminate\Http\Request');
 
         //DELETE single
         $route          = new Route(
@@ -141,7 +141,7 @@ class Controller extends Base
                     ->addComment("@return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response")
                     ->addComment("@throws \Exception")
                     ->setBody("\$" . strtolower($this->modelName) . "->delete();\nreturn response(null, 204);")
-                    ->addParameter(strtolower($this->modelName))->setTypeHint('App\\Models\\' . $this->modelName);
+                    ->addParameter(strtolower($this->modelName))->setType('App\\Models\\' . $this->modelName);
     }
 
 

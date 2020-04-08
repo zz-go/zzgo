@@ -38,11 +38,17 @@ class Model extends Base
         $this->namespace->addUse("Illuminate\Database\Eloquent\Model");
         $this->class->setExtends("Illuminate\Database\Eloquent\Model");
 
+        //Add comments to model structure
+        $this->class->addComment("Class $inputName");
+        $this->class->addComment("");
+        $this->class->addComment('@method static create(array $attributes)');
+
         //If object was initialized with SysDbTableDefinition - apply all fields
         If ($model instanceof SysDbTableDefinition) {
             $fillables = [];
-            /* @var SysDbTableDefinition $sysDbFieldDefinition */
+            $this->class->addComment("");
             foreach ($model->sysDbFieldDefinitions as $sysDbFieldDefinition) {
+                $this->class->addComment("@property {$sysDbFieldDefinition->type} {$sysDbFieldDefinition->name}");
                 $fillables [] = $sysDbFieldDefinition->name;
             }
             $this->setFillable($fillables);
@@ -65,16 +71,33 @@ class Model extends Base
         $this->namespace->addUse("Illuminate\Database\Eloquent\SoftDeletes");
         $this->class->addTrait("Illuminate\Database\Eloquent\SoftDeletes");
 
+        //Add timestamp property to model
+        $this->namespace->addUse("Carbon\Carbon");
+        $this->class->addComment('@property Carbon deleted_at');
+
         return $this;
     }
 
 
     /**
+     * Activate/deactivate timestamps for model
+     *
      * @param bool $isActive
+     * @return $this
      */
     public function setUseTimestamps(bool $isActive)
     {
         $this->class->addProperty("timestamps", $isActive);
+
+        if ($isActive) {
+            //Add timestamp property to model
+            $this->namespace->addUse("Carbon\Carbon");
+            $this->class->addComment("");
+            $this->class->addComment('@property Carbon created_at');
+            $this->class->addComment('@property Carbon updated_at');
+        }
+
+        return $this;
     }
 
     /**
