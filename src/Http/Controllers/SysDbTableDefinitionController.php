@@ -11,9 +11,12 @@ use ZZGo\Generator\Constraint;
 use ZZGo\Generator\Controller as GeneratorController;
 use ZZGo\Generator\Migration;
 use ZZGo\Generator\Model;
+use ZZGo\Http\Resources\SysDbTableDefinitionResource;
+use ZZGo\Http\Resources\SysDbTableDefinitionResourceCollection;
 use ZZGo\Models\SysDbRelatedTable;
 use ZZGo\Models\SysDbTableDefinition;
 use Illuminate\Http\Request;
+
 
 /**
  * Class SysDbTableDefinitionController
@@ -23,25 +26,21 @@ use Illuminate\Http\Request;
 class SysDbTableDefinitionController extends Controller
 {
     /**
-     * List all SysDbTableDefinitions
-     *
-     * @return \Illuminate\Http\JsonResponse
+     * @return SysDbTableDefinitionResourceCollection
      */
     public function index()
     {
-        return response()->json(SysDbTableDefinition::all());
+        return new SysDbTableDefinitionResourceCollection(SysDbTableDefinition::all());
     }
 
 
     /**
-     * Show single SysDbTableDefinition
-     *
      * @param SysDbTableDefinition $sysDbTableDefinition
-     * @return \Illuminate\Http\JsonResponse
+     * @return SysDbTableDefinitionResource
      */
     public function show(SysDbTableDefinition $sysDbTableDefinition)
     {
-        return response()->json($sysDbTableDefinition);
+        return new SysDbTableDefinitionResource($sysDbTableDefinition);
     }
 
 
@@ -49,13 +48,13 @@ class SysDbTableDefinitionController extends Controller
      * Create new SysDbTableDefinition
      *
      * @param Request $request
-     * @return \Illuminate\Http\JsonResponse
+     * @return SysDbTableDefinitionResource
      */
     public function store(Request $request)
     {
-        SysDbTableDefinition::create($request->all());
+        $sysDbTableDefinition = SysDbTableDefinition::create($request->all());
 
-        return response()->json(null, 204);
+        return new SysDbTableDefinitionResource($sysDbTableDefinition);
     }
 
 
@@ -71,6 +70,16 @@ class SysDbTableDefinitionController extends Controller
         $sysDbTableDefinition->delete();
 
         return response()->json(null, 204);
+    }
+
+    /**
+     * Get JSON schema of model
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function schema()
+    {
+        return response()->json(SysDbTableDefinition::getSchema(), 200);
     }
 
     /**
@@ -116,10 +125,6 @@ class SysDbTableDefinitionController extends Controller
         foreach ($data_definitions as $data_definition) {
             (new Constraint($data_definition))->materialize();
         }
-
-
-        //Execute migrations
-//        Artisan::call('migrate');
 
         return response()->json(null, 204);
     }

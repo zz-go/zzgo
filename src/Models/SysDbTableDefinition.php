@@ -8,6 +8,7 @@ namespace ZZGo\Models;
 
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
@@ -46,29 +47,19 @@ class SysDbTableDefinition extends Model
     protected $with = ['sysDbFieldDefinitions'];
 
     /**
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
-    public function sysDbFieldDefinitions()
+    public function sysDbFieldDefinitions(): HasMany
     {
         return $this->hasMany(SysDbFieldDefinition::class);
     }
 
     /**
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
-    public function sysDbRelatedTables()
+    public function sysDbRelatedTables(): HasMany
     {
         return $this->hasMany(SysDbRelatedTable::class, 'sys_db_source_table_definition_id');
-    }
-
-    /**
-     * Get the route key for the model.
-     *
-     * @return string
-     */
-    public function getRouteKeyName()
-    {
-        return 'name';
     }
 
     /**
@@ -76,7 +67,64 @@ class SysDbTableDefinition extends Model
      *
      * @return string
      */
-    public function getSqlName() {
+    public function getSqlName(): string
+    {
         return Str::snake(Str::pluralStudly(class_basename($this->name)));
+    }
+
+    /**
+     * Get the JSON schema of this model
+     *
+     * @return array
+     */
+    public static function getSchema()
+    {
+        return [
+            '$id'         => route('zzgo.api.sys-db-table-definitions.schema'),
+            '$schema'     => 'http://json-schema.org/draft-07/schema#',
+            'title'       => 'SysDbTableDefinition',
+            'description' => 'Definition of tables in application',
+            'type'        => 'object',
+            'required'    => ['name'],
+            'properties'  => [
+                'id'               => [
+                    'title'       => 'ID',
+                    'type'        => 'integer',
+                    "readOnly"    => true,
+                    'description' => 'ID of the table definition',
+                ],
+                'name'             => [
+                    'title'       => 'Name',
+                    'type'        => 'string',
+                    'description' => 'Base name of the table',
+                ],
+                'use_timestamps'   => [
+                    'title'       => 'Use Timestamps',
+                    'type'        => 'boolean',
+                    'default'     => true,
+                    'description' => 'Use timestamp columns in table',
+                ],
+                'use_soft_deletes' => [
+                    'title'       => 'Use Soft Deletes',
+                    'type'        => 'boolean',
+                    'default'     => true,
+                    'description' => 'Use soft delete feature',
+                ],
+                'created_at'       => [
+                    'title'       => 'Creation Date',
+                    'type'        => 'string',
+                    'format'      => 'date-time',
+                    "readOnly"    => true,
+                    'description' => 'Date/Time when object was created',
+                ],
+                'updated_at'       => [
+                    'title'       => 'Update Date',
+                    'type'        => 'string',
+                    'format'      => 'date-time',
+                    "readOnly"    => true,
+                    'description' => 'Date/Time when object was last updated',
+                ],
+            ],
+        ];
     }
 }

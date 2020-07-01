@@ -7,6 +7,8 @@
 namespace ZZGo\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use ZZGo\Http\Resources\SysDbFieldDefinitionResource;
+use ZZGo\Http\Resources\SysDbFieldDefinitionResourceCollection;
 use ZZGo\Models\SysDbFieldDefinition;
 use Illuminate\Http\Request;
 use ZZGo\Models\SysDbTableDefinition;
@@ -19,25 +21,28 @@ use ZZGo\Models\SysDbTableDefinition;
 class SysDbFieldDefinitionController extends Controller
 {
     /**
-     * List all field definitions
-     *
-     * @return \Illuminate\Http\JsonResponse
+     * @return SysDbFieldDefinitionResourceCollection
      */
     public function index()
     {
-        return response()->json(SysDbFieldDefinition::all());
+        return new SysDbFieldDefinitionResourceCollection(SysDbFieldDefinition::all());
     }
 
 
     /**
-     * Show single SysDbFieldDefinition
-     *
+     * @param SysDbTableDefinition $sysDbTableDefinition
      * @param SysDbFieldDefinition $sysDbFieldDefinition
-     * @return \Illuminate\Http\JsonResponse
+     * @return SysDbFieldDefinitionResource
      */
-    public function show(SysDbFieldDefinition $sysDbFieldDefinition)
+    public function show(SysDbTableDefinition $sysDbTableDefinition, SysDbFieldDefinition $sysDbFieldDefinition)
     {
-        return response()->json($sysDbFieldDefinition);
+        if (!$sysDbTableDefinition->sysDbFieldDefinitions()
+                                  ->where($sysDbFieldDefinition->getKeyName(), $sysDbFieldDefinition->getKey())
+                                  ->exists()) {
+            abort(404);
+        }
+
+        return new SysDbFieldDefinitionResource($sysDbFieldDefinition);
     }
 
 
@@ -46,7 +51,7 @@ class SysDbFieldDefinitionController extends Controller
      *
      * @param SysDbTableDefinition $sysDbTableDefinition
      * @param Request $request
-     * @return \Illuminate\Http\JsonResponse
+     * @return SysDbFieldDefinitionResource
      */
     public function store(SysDbTableDefinition $sysDbTableDefinition, Request $request)
     {
@@ -54,9 +59,9 @@ class SysDbFieldDefinitionController extends Controller
         $requestData                               = $request->all();
         $requestData['sys_db_table_definition_id'] = $sysDbTableDefinition->id;
 
-        SysDbFieldDefinition::create($requestData);
+        $sysDbFieldDefinition = SysDbFieldDefinition::create($requestData);
 
-        return response()->json(null, 204);
+        return new SysDbFieldDefinitionResource($sysDbFieldDefinition);
     }
 
 
@@ -72,6 +77,16 @@ class SysDbFieldDefinitionController extends Controller
         $sysDbFieldDefinition->delete();
 
         return response()->json(null, 204);
+    }
+
+    /**
+     * Get JSON schema of model
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function schema()
+    {
+        return response()->json(SysDbFieldDefinition::getSchema(), 200);
     }
 
 
