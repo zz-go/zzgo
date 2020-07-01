@@ -21,13 +21,15 @@ use ZZGo\Models\SysDbTableDefinition;
 class SysDbFieldDefinitionController extends Controller
 {
     /**
+     * @param SysDbTableDefinition $sysDbTableDefinition
      * @return SysDbFieldDefinitionResourceCollection
      */
-    public function index()
+    public function index(SysDbTableDefinition $sysDbTableDefinition)
     {
-        return new SysDbFieldDefinitionResourceCollection(SysDbFieldDefinition::all());
+        return (new SysDbFieldDefinitionResourceCollection($sysDbTableDefinition->sysDbFieldDefinitions))
+            ->setParentUrl(route('zzgo.api.sys-db-table-definitions.show',
+                                 ['sysDbTableDefinition' => $sysDbTableDefinition->id]));
     }
-
 
     /**
      * @param SysDbTableDefinition $sysDbTableDefinition
