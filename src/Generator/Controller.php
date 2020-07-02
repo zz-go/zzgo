@@ -45,6 +45,7 @@ class Controller extends Base
 
         //Model extends base model
         $this->namespace->addUse('App\\Models\\' . $this->modelName);
+        $this->namespace->addUse('App\\Http\\Resources\\' . $this->modelName . 'Resource');
         $this->namespace->addUse("App\Http\Controllers\Controller");
         $this->namespace->addUse("Illuminate\Http\Request");
         $this->class->setExtends("App\Http\Controllers\Controller");
@@ -53,7 +54,6 @@ class Controller extends Base
 
         return $this;
     }
-
 
     /**
      * Write migration to disk
@@ -65,7 +65,7 @@ class Controller extends Base
             . DIRECTORY_SEPARATOR . 'Http'
             . DIRECTORY_SEPARATOR . 'Controllers'
             . DIRECTORY_SEPARATOR . 'API'
-            . DIRECTORY_SEPARATOR . $this->modelName . 'Controller.php';
+            . DIRECTORY_SEPARATOR . ucfirst($this->modelName) . 'Controller.php';
 
         parent::materialize();
 
@@ -82,9 +82,10 @@ class Controller extends Base
         //GET list
         $route          = new Route(
             "get",
-            str::plural(strtolower($this->modelName)),
+            str::snake(str::plural($this->modelName), '-'),
             $this->modelName . "Controller",
-            "list");
+            "list",
+            str::snake(str::plural($this->modelName), '-') . ".list");
         $this->routes[] = $route;
 
         $this->class->addMethod("list")
@@ -97,25 +98,27 @@ class Controller extends Base
         //GET single
         $route          = new Route(
             "get",
-            str::plural(strtolower($this->modelName)) . "/{" . strtolower($this->modelName) . "}",
+            str::snake(str::plural($this->modelName), '-') . "/{" . strtolower($this->modelName) . "}",
             $this->modelName . "Controller",
-            "get");
+            "get",
+            str::snake(str::plural($this->modelName), '-') . ".get");
         $this->routes[] = $route;
 
         $this->class->addMethod("get")
                     ->addComment("Show single " . strtolower($this->modelName))
                     ->addComment("")
                     ->addComment("@param {$this->modelName} \$" . strtolower($this->modelName))
-                    ->addComment("@return {$this->modelName}")
-                    ->setBody('return $' . strtolower($this->modelName) . ';')
+                    ->addComment("@return {$this->modelName}Resource")
+                    ->setBody("return new {$this->modelName}Resource (\$" . strtolower($this->modelName) . ');')
                     ->addParameter(strtolower($this->modelName))->setType('App\\Models\\' . $this->modelName);
 
         //POST
         $route          = new Route(
             "post",
-            str::plural(strtolower($this->modelName)) . "/",
+            str::snake(str::plural($this->modelName), '-') . "/",
             $this->modelName . "Controller",
-            "post");
+            "post",
+            str::snake(str::plural($this->modelName), '-') . ".post");
         $this->routes[] = $route;
 
         $this->class->addMethod("post")
@@ -129,9 +132,10 @@ class Controller extends Base
         //DELETE single
         $route          = new Route(
             "delete",
-            str::plural(strtolower($this->modelName)) . "/{" . strtolower($this->modelName) . "}",
+            str::snake(str::plural($this->modelName), '-') . "/{" . strtolower($this->modelName) . "}",
             $this->modelName . "Controller",
-            "delete");
+            "delete",
+            str::snake(str::plural($this->modelName), '-') . ".delete");
         $this->routes[] = $route;
 
         $this->class->addMethod("delete")

@@ -4,7 +4,6 @@ namespace ZZGo\Http\Resources;
 
 use Carbon\Carbon;
 use Illuminate\Http\Resources\Json\JsonResource;
-use ZZGo\Models\SysDbTableDefinition;
 
 /**
  * Class SysDbFieldDefinition

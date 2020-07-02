@@ -44,9 +44,10 @@ class Model extends Base
         $this->class->addComment('@method static create(array $attributes)');
 
         //If object was initialized with SysDbTableDefinition - apply all fields
-        If ($model instanceof SysDbTableDefinition) {
+        if ($model instanceof SysDbTableDefinition) {
             $fillables = [];
             $this->class->addComment("");
+            $this->class->addComment("@property int id");
             foreach ($model->sysDbFieldDefinitions as $sysDbFieldDefinition) {
                 $this->class->addComment("@property {$sysDbFieldDefinition->type} {$sysDbFieldDefinition->name}");
                 $fillables [] = $sysDbFieldDefinition->name;
@@ -117,8 +118,9 @@ class Model extends Base
     public function materialize()
     {
         //Define filename of output
-        $this->targetFile = app_path() . DIRECTORY_SEPARATOR . 'Models' . DIRECTORY_SEPARATOR
-            . ucfirst($this->modelName) . '.php';
+        $this->targetFile = app_path()
+            . DIRECTORY_SEPARATOR . 'Models'
+            . DIRECTORY_SEPARATOR . ucfirst($this->modelName) . '.php';
 
         parent::materialize();
     }

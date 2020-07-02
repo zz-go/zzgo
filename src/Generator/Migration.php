@@ -277,8 +277,6 @@ class Migration extends Base
             return rtrim(str_replace($varNames, $varValues, $this->getStub($template . $variant)));
         }
         trigger_error('Call to undefined method ' . __CLASS__ . '::' . $name . '()', E_USER_ERROR);
-
-        return null;
     }
 
     /**

@@ -33,6 +33,10 @@ class Route
      */
     protected $controllerMethod;
 
+    /**
+     * @var String
+     */
+    protected $routeName;
 
     /**
      * Route constructor.
@@ -41,16 +45,19 @@ class Route
      * @param String $path
      * @param String $controller
      * @param String $controllerMethod
+     * @param String $routeName
      */
     public function __construct(String $httpMethod,
                                 String $path,
                                 String $controller,
-                                String $controllerMethod)
+                                String $controllerMethod,
+                                String $routeName)
     {
         $this->setHttpMethod($httpMethod);
         $this->setPath($path);
         $this->setController($controller);
         $this->setControllerMethod($controllerMethod);
+        $this->setRouteName($routeName);
     }
 
     /**
@@ -60,7 +67,15 @@ class Route
     {
         return "   Route::{$this->httpMethod}('{$this->path}', [\n"
             . "   'uses' => '{$this->controller}@{$this->controllerMethod}',\n"
-            . "   ]);\n";
+            . "   ])->name('{$this->routeName}');\n";
+    }
+
+    /**
+     * @param String $routeName
+     */
+    public function setRouteName(string $routeName): void
+    {
+        $this->routeName = $routeName;
     }
 
     /**

@@ -11,6 +11,7 @@ use ZZGo\Generator\Constraint;
 use ZZGo\Generator\Controller as GeneratorController;
 use ZZGo\Generator\Migration;
 use ZZGo\Generator\Model;
+use ZZGo\Generator\Resource;
 use ZZGo\Http\Resources\SysDbTableDefinitionResource;
 use ZZGo\Http\Resources\SysDbTableDefinitionResourceCollection;
 use ZZGo\Models\SysDbRelatedTable;
@@ -119,6 +120,7 @@ class SysDbTableDefinitionController extends Controller
             (new Migration($data_definition))->materialize();
             (new Model($data_definition))->materialize();
             (new GeneratorController($data_definition))->materialize();
+            (new Resource($data_definition))->materialize();
         }
 
         //Add constraints as last step

@@ -3,9 +3,12 @@
 namespace ZZGo\Console;
 
 use Illuminate\Console\Command;
+use ZZGo\Generator\Constraint;
 use ZZGo\Generator\Controller;
 use ZZGo\Generator\Migration;
 use ZZGo\Generator\Model;
+use ZZGo\Generator\Resource;
+use ZZGo\Models\SysDbTableDefinition;
 
 /**
  * Class ZZGo
@@ -26,7 +29,7 @@ class ZZGo extends Command
      *
      * @var string
      */
-    protected $description = 'Command description';
+    protected $description = 'Materialize all ZZGO tables';
 
     /**
      * Create a new command instance.
@@ -44,56 +47,20 @@ class ZZGo extends Command
      */
     public function handle()
     {
-        $this->createMigration("chair");
-        $this->createModel("chair");
-        $this->createController("chair");
+        $data_definitions = SysDbTableDefinition::all();
 
-        $this->createMigration("table");
-        $this->createModel("table");
-        $this->createController("table");
+        foreach ($data_definitions as $data_definition) {
+            (new Migration($data_definition))->materialize();
+            (new Model($data_definition))->materialize();
+            (new Controller($data_definition))->materialize();
+            (new Resource($data_definition))->materialize();
+        }
+
+        //Add constraints as last step
+        foreach ($data_definitions as $data_definition) {
+            (new Constraint($data_definition))->materialize();
+        }
 
         return;
-    }
-
-
-    /**
-     * @param $tableName
-     * @throws \Exception
-     */
-    protected function createMigration($tableName)
-    {
-        $migration = new Migration($tableName);
-        $migration->addField(["name" => "id", "type" => "bigIncrements"]);
-        $migration->addField(["name" => "test", "type" => "integer", "index" => true, "unsigned" => true]);
-        $migration->addField(["name" => "xxx1", "type" => "string", "index" => true, "default" => "xx"]);
-        $migration->addField(["name" => "xxx2", "type" => "integer", "index" => true, "default" => 1]);
-        $migration->addField(["name" => "xxx3", "type" => "boolean", "index" => true, "default" => false]);
-        $migration->addField(["name" => "xxx4", "type" => "float", "index" => true, "default" => 1.111]);
-        $migration->addFunction("timestamps");
-        $migration->addFunction("softDeletes");
-        $migration->materialize();
-    }
-
-
-    /**
-     * @param $modelName
-     */
-    protected function createModel($modelName)
-    {
-        $model = new Model($modelName);
-        $model->setFillable(["test", "xxx1"]);
-        $model->setUseSoftDeletes();
-        $model->materialize();
-    }
-
-
-    /**
-     * @param $modelName
-     * @throws \Illuminate\Contracts\Container\BindingResolutionException
-     */
-    protected function createController($modelName)
-    {
-        $model = new Controller($modelName);
-        $model->materialize();
     }
 }
