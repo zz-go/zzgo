@@ -6,6 +6,7 @@
 namespace ZZGo\Generator;
 
 
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use ZZGo\Models\SysDbTableDefinition;
 
@@ -61,11 +62,8 @@ class Controller extends Base
     public function materialize()
     {
         //Define filename of output
-        $this->targetFile = app_path()
-            . DIRECTORY_SEPARATOR . 'Http'
-            . DIRECTORY_SEPARATOR . 'Controllers'
-            . DIRECTORY_SEPARATOR . 'API'
-            . DIRECTORY_SEPARATOR . ucfirst($this->modelName) . 'Controller.php';
+        $this->disk       = 'controllers';
+        $this->targetFile = ucfirst($this->modelName) . 'Controller.php';
 
         parent::materialize();
 
@@ -155,27 +153,24 @@ class Controller extends Base
     protected function materializeModelRoutes()
     {
         //ACTIVATE model
-        $modelApiFile = base_path()
-            . DIRECTORY_SEPARATOR . 'routes'
-            . DIRECTORY_SEPARATOR . 'zzgo'
-            . DIRECTORY_SEPARATOR . $this->modelName . '.php';
+        $this->disk   = 'routes';
+        $modelApiFile = $this->modelName . '.php';
 
         //Check if parent directory exists. If not, create it
-        $targetDirectory = dirname($modelApiFile);
-        if (!is_dir($targetDirectory)) {
-            mkdir($targetDirectory, 0777, true);
+        $targetDirectory = dirname($this->targetFile);
+        if (!Storage::disk($this->disk)->exists($targetDirectory)) {
+            Storage::disk($this->disk)->makeDirectory($targetDirectory);
         }
 
-        file_put_contents($modelApiFile,
-                          "<?php\n"
-                          . "/**\n * This file is auto-generated.\n */"
-                          . "\n\n"
-                          . "Route::group([\n"
-                          . "                 'namespace' => 'API',\n"
-                          . "             ], function () {\n"
-                          . implode("\n\n", $this->routes)
-                          . "});"
-        );
+        Storage::disk($this->disk)->put($modelApiFile,
+                                        "<?php\n"
+                                        . "/**\n * This file is auto-generated.\n */"
+                                        . "\n\n"
+                                        . "Route::group([\n"
+                                        . "                 'namespace' => 'API',\n"
+                                        . "             ], function () {\n"
+                                        . implode("\n\n", $this->routes)
+                                        . "});");
     }
 
 

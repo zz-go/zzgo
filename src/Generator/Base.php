@@ -6,6 +6,7 @@
 namespace ZZGo\Generator;
 
 use Illuminate\Filesystem\Filesystem;
+use Illuminate\Support\Facades\Storage;
 use Nette\PhpGenerator\ClassType;
 use Nette\PhpGenerator\Method;
 use Nette\PhpGenerator\PhpFile;
@@ -38,6 +39,11 @@ abstract class Base
      * @var Method[]
      */
     protected $methods = [];
+
+    /**
+     * @var string
+     */
+    protected $disk = 'base_path';
 
     /**
      * @var string
@@ -102,12 +108,12 @@ abstract class Base
 
             //Check if parent directory exists. If not, create it
             $targetDirectory = dirname($this->targetFile);
-            if (!is_dir($targetDirectory)) {
-                mkdir($targetDirectory, 0777, true);
+            if (!Storage::disk($this->disk)->exists($targetDirectory)) {
+                Storage::disk($this->disk)->makeDirectory($targetDirectory);
             }
 
             //Create class file
-            file_put_contents($this->targetFile, $this->file);
+            Storage::disk($this->disk)->put($this->targetFile, $this->file);
         }
     }
 

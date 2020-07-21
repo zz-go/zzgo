@@ -120,10 +120,8 @@ class Resource extends Base
     public function materialize()
     {
         //Define filename of output
-        $this->targetFile = app_path()
-            . DIRECTORY_SEPARATOR . 'Http'
-            . DIRECTORY_SEPARATOR . 'Resources'
-            . DIRECTORY_SEPARATOR . ucfirst($this->modelName) . 'Resource.php';
+        $this->disk       = 'resources';
+        $this->targetFile =  ucfirst($this->modelName) . 'Resource.php';
 
         parent::materialize();
     }

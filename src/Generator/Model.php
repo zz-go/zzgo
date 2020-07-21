@@ -118,9 +118,8 @@ class Model extends Base
     public function materialize()
     {
         //Define filename of output
-        $this->targetFile = app_path()
-            . DIRECTORY_SEPARATOR . 'Models'
-            . DIRECTORY_SEPARATOR . ucfirst($this->modelName) . '.php';
+        $this->disk       = 'models';
+        $this->targetFile = ucfirst($this->modelName) . '.php';
 
         parent::materialize();
     }

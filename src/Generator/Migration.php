@@ -223,15 +223,16 @@ class Migration extends Base
 
 
         //Delete migration file if already created in the past
-        foreach (Storage::disk('migrations')->files() as $migrationFile) {
+        $this->disk      = 'migrations';
+        foreach (Storage::disk($this->disk)->files() as $migrationFile) {
             if (preg_match("/create_{$this->tableName}_table/", $migrationFile)) {
-                Storage::disk('migrations')->delete($migrationFile);
+                $this->targetFile = $migrationFile;
+                break;
             }
         }
 
-        //Define filename of output
-        $this->targetFile = database_path() . DIRECTORY_SEPARATOR . 'migrations' . DIRECTORY_SEPARATOR
-            . $this->getDatePrefix() . '_' . "create_{$this->tableName}_table" . '.php';
+        //Define new filename of output
+        $this->targetFile = $this->targetFile ?? $this->getDatePrefix() . '_' . "create_{$this->tableName}_table.php";
 
         parent::materialize();
     }

@@ -5,6 +5,7 @@
 
 namespace ZZGo\Generator;
 
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use ZZGo\Models\SysDbTableDefinition;
 
@@ -150,9 +151,17 @@ class Constraint extends Base
         $this->methods['down']->addBody('});');
 
 
-        //Define filename of output
-        $this->targetFile = database_path() . DIRECTORY_SEPARATOR . 'migrations' . DIRECTORY_SEPARATOR
-            . $this->getDatePrefix() . '_' . "add_{$this->tableName}_constraints" . '.php';
+        //Delete migration file if already created in the past
+        $this->disk      = 'migrations';
+        foreach (Storage::disk($this->disk)->files() as $migrationFile) {
+            if (preg_match("/add_{$this->tableName}_constraints/", $migrationFile)) {
+                $this->targetFile = $migrationFile;
+                break;
+            }
+        }
+
+        //Define new filename of output
+        $this->targetFile = $this->targetFile ?? $this->getDatePrefix() . '_' . "add_{$this->tableName}_constraints.php";
 
         parent::materialize();
     }
