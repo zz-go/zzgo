@@ -34,8 +34,8 @@ class CreateSysDbRelatedTablesTable extends Migration
                   ->references('id')->on('sys_db_table_definitions')
                   ->onDelete('cascade');
 
-            $table->softDeletes();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

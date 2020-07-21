@@ -21,8 +21,8 @@ class CreateSysDbTableDefinitionsTable extends Migration
             $table->string('name')->nullable(false)->unique();
             $table->boolean('use_timestamps')->nullable(false)->default(true);
             $table->boolean('use_soft_deletes')->nullable(false)->default(true);
-            $table->softDeletes();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
