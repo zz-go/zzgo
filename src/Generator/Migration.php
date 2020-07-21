@@ -6,6 +6,7 @@
 namespace ZZGo\Generator;
 
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Storage;
 use ZZGo\Models\SysDbTableDefinition;
 
 /**
@@ -90,7 +91,7 @@ class Migration extends Base
         $this->addMethod('down');
 
         //If object was initialized with SysDbTableDefinition - apply all fields
-        If ($table instanceof SysDbTableDefinition) {
+        if ($table instanceof SysDbTableDefinition) {
 
             //Add id by default
             $this->addField(["name" => "id",
@@ -219,6 +220,14 @@ class Migration extends Base
 
         //Generate body of down-method
         $this->methods['down']->addBody(' Schema::dropIfExists(?);', [$this->tableName]);
+
+
+        //Delete migration file if already created in the past
+        foreach (Storage::disk('migrations')->files() as $migrationFile) {
+            if (preg_match("/create_{$this->tableName}_table/", $migrationFile)) {
+                Storage::disk('migrations')->delete($migrationFile);
+            }
+        }
 
         //Define filename of output
         $this->targetFile = database_path() . DIRECTORY_SEPARATOR . 'migrations' . DIRECTORY_SEPARATOR

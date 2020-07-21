@@ -52,7 +52,8 @@ class ZZGoServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        //
+        // Load the config file and merge it with the user's (should it get published)
+        $this->mergeConfigFrom(__DIR__ . '/../config/filesystems.disks.php', 'filesystems.disks');
     }
 
     /**
