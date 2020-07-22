@@ -14,7 +14,10 @@
         "laminas/laminas-code": "^3.4"
     },
     "autoload": {
-        "psr-4": { "ZZGo\\": "src/" }
+        "psr-4": {
+            "ZZGo\\": "src/",
+            "ZZGo\\Seeds\\": "database/seeds/"
+        }
     },
     "extra": {
         "laravel": {

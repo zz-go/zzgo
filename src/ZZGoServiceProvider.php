@@ -6,6 +6,7 @@ use Illuminate\Routing\Router;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 use ZZGo\Console\ZZGo;
+use ZZGo\Console\ZZSeed;
 use ZZGo\Http\Middleware\DefaultReturnJson;
 
 
@@ -26,15 +27,14 @@ class ZZGoServiceProvider extends ServiceProvider
         if ($this->app->runningInConsole()) {
             $this->commands([
                                 ZZGo::class,
+                                ZZSeed::class,
                             ]);
         }
 
         //Migrations
         $this->loadMigrationsFrom(__DIR__ . '/../database/migrations');
 
-
         //Routes
-
         /** @var Router $router */
         $router = $this->app['router'];
 
