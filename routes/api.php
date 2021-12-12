@@ -1,6 +1,8 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use ZZGo\Http\Controllers\SysDbTableDefinitionController;
+use ZZGo\Http\Controllers\SysDbFieldDefinitionController;
 
 /*
 |--------------------------------------------------------------------------
@@ -14,8 +16,8 @@ use Illuminate\Support\Facades\Route;
 |--------------------------------------------------------------------------
 */
 
-Route::get('sys-db-table-definitions/schema.json', ['uses' => 'SysDbTableDefinitionController@schema'])->name('sys-db-table-definitions.schema');
-Route::get('sys-db-field-definitions/schema.json', ['uses' => 'SysDbFieldDefinitionController@schema'])->name('sys-db-field-definitions.schema');
+Route::get('sys-db-table-definitions/schema.json', [SysDbTableDefinitionController::class, 'schema'])->name('sys-db-table-definitions.schema');
+Route::get('sys-db-field-definitions/schema.json', [SysDbFieldDefinitionController::class, 'schema'])->name('sys-db-field-definitions.schema');
 
 /*
 |--------------------------------------------------------------------------
@@ -33,14 +35,14 @@ Route::group([
     | GET zzgo/sys-db-table-definitions/
     |--------------------------------------------------------------------------
     */
-    Route::get('/', ['uses' => 'SysDbTableDefinitionController@index'])->name('index');
+    Route::get('/', [SysDbTableDefinitionController::class, 'index'])->name('index');
 
     /*
     |--------------------------------------------------------------------------
     | POST zzgo/sys-db-table-definitions/
     |--------------------------------------------------------------------------
     */
-    Route::post('/', ['uses' => 'SysDbTableDefinitionController@store'])->name('store');
+    Route::post('/', [SysDbTableDefinitionController::class, 'store'])->name('store');
 
     /*
     |--------------------------------------------------------------------------
@@ -58,7 +60,7 @@ Route::group([
         |--------------------------------------------------------------------------
         */
 
-        Route::get('/', ['uses' => 'SysDbTableDefinitionController@show'])->name('show');
+        Route::get('/', [SysDbTableDefinitionController::class, 'show'])->name('show');
 
         /*
         |--------------------------------------------------------------------------
@@ -66,7 +68,7 @@ Route::group([
         |--------------------------------------------------------------------------
         */
 
-        Route::put('/', ['uses' => 'SysDbTableDefinitionController@update'])->name('update');
+        Route::put('/', [SysDbTableDefinitionController::class, 'update'])->name('update');
 
         /*
         |--------------------------------------------------------------------------
@@ -74,7 +76,7 @@ Route::group([
         |--------------------------------------------------------------------------
         */
 
-        Route::delete('/', ['uses' => 'SysDbTableDefinitionController@destroy'])->name('destroy');
+        Route::delete('/', [SysDbTableDefinitionController::class, 'destroy'])->name('destroy');
 
         /*
         |--------------------------------------------------------------------------
@@ -82,7 +84,7 @@ Route::group([
         |--------------------------------------------------------------------------
         */
 
-        Route::post('/materialize', ['uses' => 'SysDbTableDefinitionController@materialize'])->name('materialize');
+        Route::post('/materialize', [SysDbTableDefinitionController::class, 'materialize'])->name('materialize');
 
         /*
         |--------------------------------------------------------------------------
@@ -90,7 +92,7 @@ Route::group([
         |--------------------------------------------------------------------------
         */
 
-        Route::post('/link', ['uses' => 'SysDbTableDefinitionController@link'])->name('link');
+        Route::post('/link', [SysDbTableDefinitionController::class, 'link'])->name('link');
 
         /*
         |--------------------------------------------------------------------------
@@ -109,7 +111,7 @@ Route::group([
             |--------------------------------------------------------------------------
             */
 
-            Route::get('/', ['uses' => 'SysDbFieldDefinitionController@index'])->name('index');
+            Route::get('/', [SysDbFieldDefinitionController::class, 'index'])->name('index');
 
             /*
             |--------------------------------------------------------------------------
@@ -117,7 +119,7 @@ Route::group([
             |--------------------------------------------------------------------------
             */
 
-            Route::post('/', ['uses' => 'SysDbFieldDefinitionController@store'])->name('store');
+            Route::post('/', [SysDbFieldDefinitionController::class, 'store'])->name('store');
 
             /*
             |--------------------------------------------------------------------------
@@ -135,7 +137,7 @@ Route::group([
                 |--------------------------------------------------------------------------
                  */
 
-                Route::get('/', ['uses' => 'SysDbFieldDefinitionController@show'])->name('show');
+                Route::get('/', [SysDbFieldDefinitionController::class, 'show'])->name('show');
 
                 /*
                 |--------------------------------------------------------------------------
@@ -143,7 +145,7 @@ Route::group([
                 |--------------------------------------------------------------------------
                 */
 
-                Route::put('/', ['uses' => 'SysDbFieldDefinitionController@update'])->name('update');
+                Route::put('/', [SysDbFieldDefinitionController::class, 'update'])->name('update');
 
                 /*
                 |--------------------------------------------------------------------------
@@ -151,7 +153,7 @@ Route::group([
                 |--------------------------------------------------------------------------
                  */
 
-                Route::delete('/', ['uses' => 'SysDbFieldDefinitionController@destroy'])->name('destroy');
+                Route::delete('/', [SysDbFieldDefinitionController::class, 'destroy'])->name('destroy');
 
                 /*
                 |--------------------------------------------------------------------------
@@ -159,7 +161,7 @@ Route::group([
                 |--------------------------------------------------------------------------
                  */
 
-                Route::post('/link', ['uses' => 'SysDbFieldDefinitionController@link'])->name('link');
+                Route::post('/link', [SysDbFieldDefinitionController::class, 'link'])->name('link');
 
             });
         });
