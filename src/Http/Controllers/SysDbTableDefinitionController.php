@@ -122,26 +122,21 @@ class SysDbTableDefinitionController extends Controller
 
 
     /**
-     * Generate all defined data definitions
+     * Generate / materialize SysDbTableDefinition Files
      *
      * @return \Illuminate\Http\JsonResponse
      * @throws \Exception
      */
-    public function materialize()
+    public function materialize(SysDbTableDefinition $sysDbTableDefinition)
     {
-        $data_definitions = SysDbTableDefinition::all();
-
-        foreach ($data_definitions as $data_definition) {
-            (new Migration($data_definition))->materialize();
-            (new Model($data_definition))->materialize();
-            (new GeneratorController($data_definition))->materialize();
-            (new Resource($data_definition))->materialize();
-        }
+        (new Migration($sysDbTableDefinition))->materialize();
+        (new Model($sysDbTableDefinition))->materialize();
+        (new GeneratorController($sysDbTableDefinition))->materialize();
+        (new Resource($sysDbTableDefinition))->materialize();
 
         //Add constraints as last step
-        foreach ($data_definitions as $data_definition) {
-            (new Constraint($data_definition))->materialize();
-        }
+        (new Constraint($sysDbTableDefinition))->materialize();
+
 
         return response()->json(null, 204);
     }
