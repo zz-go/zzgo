@@ -91,7 +91,8 @@ class SysDbFieldDefinitionController extends Controller
      * @return \Illuminate\Http\JsonResponse
      * @throws \Exception
      */
-    public function destroy(SysDbFieldDefinition $sysDbFieldDefinition)
+    public function destroy(SysDbTableDefinition $sysDbTableDefinition,
+                            SysDbFieldDefinition $sysDbFieldDefinition)
     {
         $sysDbFieldDefinition->delete();
 
