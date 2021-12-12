@@ -62,6 +62,14 @@ Route::group([
 
         /*
         |--------------------------------------------------------------------------
+        | PUT zzgo/sys-db-table-definitions/<sysDbTableDefinition>
+        |--------------------------------------------------------------------------
+        */
+
+        Route::put('/', ['uses' => 'SysDbTableDefinitionController@update'])->name('update');
+
+        /*
+        |--------------------------------------------------------------------------
         | DELETE zzgo/sys-db-table-definitions/<sysDbTableDefinition>
         |--------------------------------------------------------------------------
         */
@@ -128,6 +136,14 @@ Route::group([
                  */
 
                 Route::get('/', ['uses' => 'SysDbFieldDefinitionController@show'])->name('show');
+
+                /*
+                |--------------------------------------------------------------------------
+                | PUT zzgo/sys-db-table-definitions/<sysDbTableDefinition>/sys-db-field-definitions/<sysDbFieldDefinition>
+                |--------------------------------------------------------------------------
+                */
+
+                Route::put('/', ['uses' => 'SysDbFieldDefinitionController@update'])->name('update');
 
                 /*
                 |--------------------------------------------------------------------------

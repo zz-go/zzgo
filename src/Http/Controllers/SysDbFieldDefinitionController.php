@@ -47,6 +47,23 @@ class SysDbFieldDefinitionController extends Controller
         return new SysDbFieldDefinitionResource($sysDbFieldDefinition);
     }
 
+    /**
+     * Update SysDbFieldDefinition
+     *
+     * @param SysDbTableDefinition $sysDbTableDefinition
+     * @param Request $request
+     * @return SysDbFieldDefinitionResource
+     */
+    public function update(SysDbTableDefinition $sysDbTableDefinition,
+                           SysDbFieldDefinition $sysDbFieldDefinition,
+                           Request              $request)
+    {
+        $requestData = $request->post();
+        $sysDbFieldDefinition->update($requestData);
+
+        return new SysDbFieldDefinitionResource($sysDbFieldDefinition);
+    }
+
 
     /**
      * Attach new SysDbFieldDefinition to SysDbTableDefinition
@@ -58,7 +75,7 @@ class SysDbFieldDefinitionController extends Controller
     public function store(SysDbTableDefinition $sysDbTableDefinition, Request $request)
     {
 
-        $requestData                               = $request->all();
+        $requestData                               = $request->post();
         $requestData['sys_db_table_definition_id'] = $sysDbTableDefinition->id;
 
         $sysDbFieldDefinition = SysDbFieldDefinition::create($requestData);

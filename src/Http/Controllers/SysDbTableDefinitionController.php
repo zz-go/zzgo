@@ -44,6 +44,21 @@ class SysDbTableDefinitionController extends Controller
         return new SysDbTableDefinitionResource($sysDbTableDefinition);
     }
 
+    /**
+     * Update SysDbTableDefinition
+     *
+     * @param SysDbTableDefinition $sysDbTableDefinition
+     * @param Request $request
+     * @return SysDbTableDefinitionResource
+     */
+    public function update(SysDbTableDefinition $sysDbTableDefinition, Request $request)
+    {
+        $requestData = $request->post();
+        $sysDbTableDefinition->update($requestData);
+
+        return new SysDbTableDefinitionResource($sysDbTableDefinition);
+    }
+
 
     /**
      * Create new SysDbTableDefinition

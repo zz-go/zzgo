@@ -73,7 +73,7 @@ class SysDbFieldDefinition extends Model
                 'name'       => [
                     'title'       => 'Name',
                     'type'        => 'string',
-                    'description' => 'Name of the colum',
+                    'description' => 'Name of the column',
                 ],
                 'type'       => [
                     'title'       => 'Type',
