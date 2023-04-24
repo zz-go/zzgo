@@ -10,8 +10,8 @@
     }],
     "require": {
         "php": "^7.3|^8.0",
-        "nette/php-generator": "^3.2",
-        "laminas/laminas-code": "^3.4"
+        "nette/php-generator": "^4.0",
+        "laminas/laminas-code": "^4.10"
     },
     "autoload": {
         "psr-4": {
